@@ -1,0 +1,382 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ang Ating Vargas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Hanken+Grotesk:wght@400;500;600&family=Caveat:wght@500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: phone camera flow (visitor) beside two stacked exit projections: main scrapbook wall, then a compact print + QR screen. Single committed look: a darkened gallery. */
+:root{
+  --night:#15130F; --night-2:#211D17; --paper:#F1E8D6; --paper-2:#E6D9BF; --ink:#2B2118; --ink-2:#6E5E4B;
+  --thread:#C2412D; --gold:#C9A14A; --fg:#EDE4D3; --fg-2:#A69A87; --line:#3A332A; --gallery:#D9D2C3;
+  --f-display:"Young Serif",Georgia,serif; --f-body:"Hanken Grotesk",system-ui,sans-serif;
+  --f-hand:"Caveat","Bradley Hand",cursive; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--night);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:20px;padding-block:28px 48px}
+.wrap{max-width:1380px;margin:0 auto;display:grid;gap:24px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.4vw,40px);margin:0;line-height:1.1;text-wrap:balance}
+.sub{color:var(--fg-2);max-width:62ch;margin:6px 0 0}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.stage{display:grid;grid-template-columns:360px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}.phone{margin:0 auto}}
+.walls{display:grid;gap:22px;min-width:0}
+.col-label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+button,.btn{font:500 14px var(--f-body);border-radius:999px;padding:10px 18px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,label:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+.ghost{padding:6px 12px;font-size:13px;color:var(--fg-2)}
+.ghost:hover{color:var(--fg);border-color:var(--fg-2)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* phone */
+.phone{width:100%;max-width:360px;height:740px;border-radius:44px;background:#0B0A08;padding:12px;border:1px solid var(--line)}
+.screen{height:100%;border-radius:34px;background:var(--paper);color:var(--ink);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.bar{display:flex;justify-content:space-between;padding:14px 22px 6px;font:500 12px var(--f-mono);color:var(--ink-2)}
+.view{flex:1;overflow-y:auto;padding:8px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.view h2{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.15;margin:0;text-wrap:balance}
+.view p{margin:0;color:var(--ink-2)}
+.pbtn{background:var(--ink);color:var(--paper);border:none;padding:13px 18px;font-size:15px;width:100%}
+.pbtn.alt{background:transparent;color:var(--ink);border:1px solid var(--ink-2)}
+.pbtn:disabled{opacity:.4;cursor:default}
+.field{display:grid;gap:4px}
+.field label{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.field input,.field textarea{font:400 15px var(--f-body);color:var(--ink);background:#FBF6EA;border:1px solid var(--paper-2);border-radius:10px;padding:10px 12px;width:100%;resize:none}
+.err{color:#A3261E;font-size:13px;min-height:1em}
+.progress{display:flex;gap:4px}
+.progress i{flex:1;height:3px;border-radius:2px;background:var(--paper-2)}
+.progress i.on{background:var(--ink)}
+.art svg,.art img{width:100%;height:100%;display:block;object-fit:cover}
+
+/* viewfinder */
+.vf{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:#0E0D0B;flex:none}
+.scene{position:absolute;inset:0;background:var(--gallery);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;padding:9% 7% 12%;gap:10% 9%;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.scene::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9%;background:#B9B0A0}
+.work{border:none;padding:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#4A4033}
+.work .art{width:82%;aspect-ratio:1;border:3px solid #3A2E22;display:block}
+.work small{font:500 8px/1.2 var(--f-mono);text-align:center;background:#F6F1E6;padding:2px 4px}
+.brackets{position:absolute;inset:14%;pointer-events:none;opacity:0;transition:opacity .4s}
+.brackets i{position:absolute;width:22px;height:22px;border:2px solid #fff}
+.brackets i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0}.brackets i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0}
+.brackets i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0}.brackets i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0}
+.vf.framed .brackets{opacity:1}
+.vfhint{position:absolute;left:0;right:0;top:10px;text-align:center;font:500 11px var(--f-mono);color:#fff;text-shadow:0 1px 3px #000;letter-spacing:.06em;z-index:3}
+.vfrec{position:absolute;left:12px;bottom:10px;font:500 10px var(--f-mono);color:#fff;text-shadow:0 1px 3px #000;z-index:3}
+.vf .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:4}
+.vf .flash.go{animation:fl .5s}
+@keyframes fl{0%{opacity:1}100%{opacity:0}}
+.vf .shot{position:absolute;inset:0;z-index:2}
+.vf .shot .art{position:absolute;inset:0}
+.vf .badge{position:absolute;right:10px;bottom:10px;z-index:3;background:var(--ink);color:var(--paper);font:500 11px var(--f-mono);padding:3px 8px;border-radius:999px}
+.camrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.shutter{width:66px;height:66px;border-radius:50%;border:4px solid var(--ink);background:#fff;padding:0;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 30px var(--ink)}
+.shutter:disabled{opacity:.35;cursor:default}
+.small{font-size:12px;color:var(--ink-2);background:none;border:none;padding:4px;text-decoration:underline;cursor:pointer}
+.small input{position:absolute;width:1px;height:1px;opacity:0}
+
+.big{font-family:var(--f-display);font-size:64px;line-height:1;color:var(--ink)}
+.slide{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.stat{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center}
+.stat .art{width:44px;height:44px;border-radius:6px;overflow:hidden;display:block}
+.meter{height:6px;background:var(--paper-2);border-radius:3px;overflow:hidden;margin-top:4px}
+.meter b{display:block;height:100%;background:var(--thread)}
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--paper-2)}
+.dots i.on{background:var(--ink)}
+
+/* scrapbook page (shared) — em-sized so it scales with its container */
+.page{position:relative;aspect-ratio:4/3;width:100%;background:var(--paper);border-radius:.3em;color:var(--ink)}
+.page .pt{position:absolute;left:5%;top:5%;font-family:var(--f-display);font-size:1.45em;line-height:1.1}
+.page .pd{position:absolute;right:5%;top:6.5%;font-family:var(--f-mono);font-size:.7em;color:var(--ink-2);border:1px solid var(--ink-2);padding:.1em .45em;transform:rotate(3deg)}
+.page .pol{position:absolute;top:24%;width:21%;aspect-ratio:4/5;background:#fff;padding:2.2% 2.2% 6%}
+.page .pol .art{width:100%;height:100%;overflow:hidden;display:block}
+.page .tape{position:absolute;top:-7%;left:28%;width:44%;height:12%;background:rgba(222,203,150,.85)}
+.page .pn{position:absolute;left:6%;right:6%;bottom:6%;font-family:var(--f-hand);font-size:1.75em;line-height:1.05;color:var(--ink)}
+.page .pn small{font-size:.65em;color:var(--ink-2)}
+
+/* walls */
+.wall{position:relative;width:100%;aspect-ratio:16/9;background:var(--night-2);border-radius:10px;overflow:hidden;container-type:inline-size;border:1px solid var(--line)}
+.wall:fullscreen{border-radius:0;border:none;aspect-ratio:auto;height:100%}
+.wall .wp{position:absolute;width:24cqw;font-size:1.05cqw;transition:left 1.2s cubic-bezier(.2,.7,.2,1),top 1.2s cubic-bezier(.2,.7,.2,1),transform 1.2s cubic-bezier(.2,.7,.2,1),opacity 1.2s,filter 1.2s}
+.wall .wp.mine .page{outline:.25em solid var(--gold);outline-offset:.3em}
+.wall svg.threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wall .hud{position:absolute;font-family:var(--f-mono);font-size:max(10px,1cqw);letter-spacing:.08em;color:var(--fg-2);z-index:50}
+.wall .title{left:2.2cqw;top:2cqw;font-family:var(--f-display);letter-spacing:0;font-size:max(14px,2cqw);color:var(--fg)}
+.wall .title small{display:block;font-family:var(--f-mono);font-size:.5em;letter-spacing:.1em;color:var(--fg-2);text-transform:uppercase;margin-top:.3em}
+.wall .count{right:2.2cqw;top:2.2cqw;text-align:right}
+.wall .shared{right:2.2cqw;bottom:2cqw;color:#E7A797;text-align:right;max-width:40cqw}
+.wall .now{left:2.2cqw;bottom:2cqw}
+.wall .glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(201,161,74,.22),transparent 60%);opacity:0;transition:opacity .8s;pointer-events:none}
+.wall .glow.on{opacity:1}
+
+/* screen 2: print + QR */
+.w2{display:flex;flex-direction:column;gap:1.6cqw;padding:2.4cqw 3cqw;height:100%}
+.w2 .hd{display:flex;justify-content:space-between;align-items:baseline}
+.w2 .hd b{font-family:var(--f-display);font-weight:400;font-size:2.2cqw;color:var(--fg)}
+.w2 .hd span{font-family:var(--f-mono);font-size:max(10px,1cqw);color:var(--fg-2);letter-spacing:.08em}
+.w2 .tiles{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:1.6cqw 2cqw;min-height:0}
+.w2 .tile{display:flex;flex-direction:column;gap:.7cqw;min-width:0;min-height:0}
+.w2 .tile .pg{font-size:.86cqw;width:88%}
+.w2 .tile.mine .page{outline:.3em solid var(--gold);outline-offset:.25em}
+.w2 .tile.new{animation:pin .7s cubic-bezier(.2,.7,.2,1)}
+@keyframes pin{0%{opacity:0;transform:translateY(-3cqw) scale(.94)}100%{opacity:1;transform:none}}
+.w2 .tile .meta{display:flex;gap:.9cqw;align-items:center;min-width:0}
+.w2 .tile canvas{width:5.6cqw;height:5.6cqw;flex:none;image-rendering:pixelated;background:#fff;padding:.3cqw;border-radius:.4cqw}
+.w2 .tile .nm{font-family:var(--f-display);font-size:max(11px,1.25cqw);color:var(--fg);line-height:1.15}
+.w2 .tile .ag{font-family:var(--f-mono);font-size:max(9px,.85cqw);color:var(--fg-2)}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:10px}
+.notes div{border-top:1px solid var(--line);padding-top:10px;color:var(--fg-2);font-size:14px}
+.notes b{display:block;color:var(--fg);font-weight:500;margin-bottom:2px}
+@media (prefers-reduced-motion:reduce){.wall .wp,.scene{transition-duration:.01s}.w2 .print.in,.vf .flash.go{animation:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">UP Vargas Museum · 3rd floor · prototype</div>
+    <h1>Ang Ating Vargas</h1>
+    <p class="sub">Vargas spent sixty years collecting. Here, each visitor collects for one visit by photographing what each prompt asks for. At the exit their scrapbook page lands on the main wall, and the second screen hands them their print and a QR code to keep it.</p>
+  </header>
+
+  <div class="stage">
+    <section aria-label="Visitor phone">
+      <div class="col-label"><span class="eyebrow">Visitor's phone</span><button class="ghost" id="restart">Start over</button></div>
+      <div class="phone"><div class="screen">
+        <div class="bar"><span>9:41</span><span>vargas.up.edu.ph/ikaw</span></div>
+        <div class="view" id="view"></div>
+      </div></div>
+    </section>
+
+    <div class="walls">
+      <section aria-label="Main projector wall">
+        <div class="col-label">
+          <span class="eyebrow">Projector 1 · main wall</span>
+          <div class="row">
+            <button class="ghost" id="sim">Simulate a visitor</button>
+            <button class="ghost" id="auto" aria-pressed="true">Auto: on</button>
+            <button class="ghost" data-fs="wall">Fullscreen</button>
+          </div>
+        </div>
+        <div class="wall" id="wall">
+          <div class="glow" id="glow"></div>
+          <div class="hud title">Ang Ating Vargas<small>Our own Vargas · visitor collections</small></div>
+          <div class="hud count" id="count"></div>
+          <div class="hud now" id="now"></div>
+          <div class="hud shared" id="shared"></div>
+        </div>
+        <div class="notes">
+          <div><b>Newest in front</b>Each new page enters at the center. Older pages are pushed back, smaller and sepia, then drop off the wall.</div>
+          <div><b>Red threads</b>Pages that photographed the same artwork are tied together. The front page's threads are drawn heavier.</div>
+        </div>
+      </section>
+
+      <section aria-label="Print and QR screen">
+        <div class="col-label">
+          <span class="eyebrow">Projector 2 · your print + QR</span>
+          <button class="ghost" data-fs="wall2">Fullscreen</button>
+        </div>
+        <div class="wall" id="wall2">
+          <div class="w2">
+            <div class="hd"><b>Kunin ang iyong Vargas</b><span>FIND YOUR PAGE · SCAN TO KEEP IT</span></div>
+            <div class="tiles" id="tiles"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const STOPS=[
+ {zone:'Objects of Study',where:'Russian icon gallery',q:'Photograph the icon you would keep in the Philippines.',opts:[
+  {id:'icon-gold',t:'Gold-leaf Madonna',m:'halo',c:'#B8892B',th:'K'},
+  {id:'icon-saint',t:'Saint with a book',m:'halo',c:'#7A2E22',th:'Ka'},
+  {id:'icon-metal',t:'Icon in a metal cover',m:'halo',c:'#8E8C82',th:'Kn'},
+  {id:'lacquer',t:'Painted lacquer box',m:'box',c:'#1E1A18',th:'K'}]},
+ {zone:'Objects of Study',where:'Polyptych, Zais, glass paintings',q:'Photograph the detail that caught your eye.',opts:[
+  {id:'poly-halo',t:'The polyptych’s gold halo',m:'halo',c:'#C9A14A',th:'K'},
+  {id:'poly-hands',t:'Painted folded hands',m:'hands',c:'#5C3A24',th:'Kn'},
+  {id:'zais',t:'Zais’s tiny figures',m:'land',c:'#9FB7B0',th:'Ka'},
+  {id:'glass',t:'A glass-painted village',m:'glass',c:'#E8B23A',th:'K'}]},
+ {zone:'A Collecting Life',where:'Portraits and commissioned paintings',q:'Photograph the painting that tells you the most about Vargas.',opts:[
+  {id:'oath',t:'Oath Taking, 1941',m:'portrait',c:'#3E3A2E',th:'Ka'},
+  {id:'pec',t:'As Chairman of the PEC',m:'portrait',c:'#5A2F25',th:'Ka'},
+  {id:'clan',t:'Kawilihan Clan I, 1950',m:'group',c:'#6B7A4A',th:'K'},
+  {id:'sukarno',t:'Vargas and Sukarno, 1962',m:'group',c:'#3D5568',th:'Ka'}]},
+ {zone:'A Collecting Life',where:'Medals, canes, scrapbook table',q:'If you were Vargas, what would you keep? Photograph it.',opts:[
+  {id:'medal',t:'A medal',m:'medal',c:'#2B2420',th:'Kn'},
+  {id:'salakot',t:'The salakot',m:'hat',c:'#D9CBA8',th:'K'},
+  {id:'cane',t:'His cane',m:'cane',c:'#E8DFCC',th:'Kn'},
+  {id:'scrap',t:'A scrapbook page',m:'page',c:'#EFE3C8',th:'Ka'}]}
+];
+const ALL=Object.fromEntries(STOPS.flatMap(s=>s.opts).map(o=>[o.id,o]));
+const TYPES={K:['Ang Mausisa','The curious one. You went for what fascinated you: kawilihan.'],Ka:['Ang Historyador','The historian. You picked what carries a story: kasaysayan.'],Kn:['Ang Masinop','The meticulous one. You noticed craft and care: kasanayan.']};
+
+function inner(o){
+ const c=o.c,B=`<rect width="100" height="100" fill="${c}"/>`;
+ switch(o.m){
+  case'halo':return B+`<circle cx="50" cy="36" r="19" fill="#E9C66B" opacity=".9"/><ellipse cx="50" cy="82" rx="26" ry="32" fill="#3A2416"/><circle cx="50" cy="38" r="10" fill="#D8B48A"/><rect x="4" y="4" width="92" height="92" fill="none" stroke="#E9C66B" stroke-width="2" opacity=".6"/>`;
+  case'box':return B+`<rect x="12" y="28" width="76" height="46" rx="6" fill="#120F0D" stroke="#C9A14A" stroke-width="2"/><ellipse cx="50" cy="51" rx="22" ry="14" fill="#A3261E"/><circle cx="50" cy="51" r="6" fill="#E9C66B"/>`;
+  case'hands':return B+`<rect width="100" height="100" fill="#C9A14A" opacity=".35"/><path d="M38 90 L46 30 Q50 22 54 30 L62 90 Z" fill="#D8B48A"/><path d="M50 26 L50 90" stroke="#9A7A58" stroke-width="1.5"/>`;
+  case'land':return B+`<rect y="58" width="100" height="42" fill="#4F6D5A"/><path d="M0 62 Q30 44 55 58 T100 54 V100 H0Z" fill="#3D5646"/><circle cx="76" cy="24" r="8" fill="#F1E3B8"/><rect x="40" y="64" width="3" height="8" fill="#7A2E22"/><rect x="47" y="65" width="3" height="7" fill="#1E3550"/>`;
+  case'glass':return B+`<rect y="62" width="100" height="38" fill="#3E7A3A"/><rect x="14" y="40" width="22" height="24" fill="#D3453A"/><path d="M12 40 L25 28 L38 40Z" fill="#4A2A1A"/><rect x="56" y="44" width="26" height="20" fill="#2F5FA3"/><path d="M54 44 L69 32 L84 44Z" fill="#4A2A1A"/><circle cx="20" cy="18" r="8" fill="#FBEFB0"/>`;
+  case'portrait':return B+`<ellipse cx="50" cy="40" rx="15" ry="19" fill="#C99A6E"/><path d="M18 100 Q22 66 50 62 Q78 66 82 100Z" fill="#1E1C1A"/><path d="M44 64 L50 80 L56 64Z" fill="#EDE4D3"/><rect x="4" y="4" width="92" height="92" fill="none" stroke="#C9A14A" stroke-width="3"/>`;
+  case'group':return B+[22,40,60,78].map((x,i)=>`<circle cx="${x}" cy="${44+(i%2)*6}" r="8" fill="#C99A6E"/><path d="M${x-12} 100 Q${x} ${58+(i%2)*6} ${x+12} 100Z" fill="#2A2420"/>`).join('');
+  case'medal':return B+`<path d="M38 6 L50 40 L62 6Z" fill="#2F5FA3"/><path d="M44 6 L50 30 L56 6Z" fill="#D3453A"/><circle cx="50" cy="62" r="24" fill="#C9A14A"/><circle cx="50" cy="62" r="17" fill="none" stroke="#8A6A22" stroke-width="2"/><path d="M50 50 L54 60 L64 60 L56 66 L59 76 L50 70 L41 76 L44 66 L36 60 L46 60Z" fill="#8A6A22"/>`;
+  case'hat':return B+`<path d="M10 66 L50 26 L90 66 Q50 76 10 66Z" fill="#8A6234"/><path d="M50 26 L50 66 M30 46 L70 46" stroke="#5C3E1E" stroke-width="1.5"/><ellipse cx="50" cy="66" rx="40" ry="5" fill="#6E4B26"/>`;
+  case'cane':return B+`<path d="M52 92 L52 30 Q52 16 40 16 Q30 16 30 26" fill="none" stroke="#5C3A24" stroke-width="7" stroke-linecap="round"/><rect x="48" y="84" width="8" height="8" fill="#C9A14A"/>`;
+  case'page':return B+`<rect x="14" y="14" width="72" height="72" fill="#F8F0DC" stroke="#CDBB95"/><rect x="22" y="22" width="30" height="24" fill="#7A6A53"/>${[54,62,70,78].map(y=>`<rect x="22" y="${y}" width="${y%16?52:40}" height="2" fill="#B7A47E"/>`).join('')}`;
+ }
+}
+const art=o=>`<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${inner(o)}</svg>`;
+/* a visitor's photo of the work: off-center, slightly tilted, gallery wall around it, uneven light */
+function shot(p){
+ if(p.photo)return `<img src="${p.photo}" alt="">`;
+ const o=ALL[p.id],r=p.r??((p.id.length*7)%5-2);
+ return `<svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="100" height="125" fill="#D3CBBB"/><rect y="104" width="100" height="21" fill="#B3AA99"/><g transform="translate(14 20) rotate(${r} 36 36) scale(.72)"><rect x="-4" y="-4" width="108" height="108" fill="#3A2E22"/>${inner(o)}</g><rect width="100" height="125" fill="#000" opacity=".06"/><rect width="34" height="125" fill="#fff" opacity=".07"/></svg>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const DATE='11 OKT 2026';
+function pageHTML(c){
+ const picks=c.picks.slice(0,4),n=picks.length,rot=[-6,4,-3,5],w=21,gap=(90-n*w)/(n+1);
+ const note=(c.picks.find(p=>p.note)||{}).note;
+ return `<div class="page"><div class="pt">Vargas ni ${esc(c.name)}</div><div class="pd">${DATE}</div>${picks.map((p,i)=>`<div class="pol" style="left:${5+gap+i*(w+gap)}%;transform:rotate(${rot[i]}deg);top:${24+(i%2)*4}%"><span class="art">${shot(p)}</span><span class="tape"></span></div>`).join('')}<div class="pn">${note?`“${esc(note)}” <small>— ${esc(c.name)}</small>`:`<small>${n} photo${n===1?'':'s'} by ${esc(c.name)}</small>`}</div></div>`;
+}
+function drawQR(cv,seed){
+ if(!cv)return;const x=cv.getContext('2d'),n=cv.width;x.fillStyle='#fff';x.fillRect(0,0,n,n);x.fillStyle='#2B2118';
+ let h=[...String(seed)].reduce((a,ch)=>(a*31+ch.charCodeAt(0))>>>0,7);const r=()=>(h=(Math.imul(h,1103515245)+12345)>>>0)/4294967296;
+ for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(r()>.52)x.fillRect(i,j,1,1);
+ [[0,0],[n-7,0],[0,n-7]].forEach(([a,b])=>{x.fillStyle='#fff';x.fillRect(a-1<0?a:a-1,b-1<0?b:b-1,8,8);x.fillStyle='#2B2118';x.fillRect(a,b,7,7);x.fillStyle='#fff';x.fillRect(a+1,b+1,5,5);x.fillStyle='#2B2118';x.fillRect(a+2,b+2,3,3)});
+}
+const code=c=>(c.key*7919+1234).toString(36);
+
+/* ---------- seeded visitors ---------- */
+const NAMES=['Bea','Migs','Lia','Paolo','Kat','Josh','Ria','Enzo','Nina','Carlo','Ysa','Gab','Mara','Tonyo','Jam','Pia'];
+const NOTES=['Parang si Lola.','Who owns this now?','The gold hand got me.','Dapat dito lang ito.','He kept everything.','Tahimik pero malakas.','Ang ganda ng ilaw.','Bakit siya ang chairman?','I want this on my wall.','Looks like our old album.'];
+let seq=0;
+function randomVisitor(){
+ const picks=STOPS.map(s=>s.opts[Math.floor(Math.random()*4)]).filter(()=>Math.random()>.12).map(o=>({id:o.id,r:Math.round(Math.random()*8-4)}));
+ if(!picks.length)picks.push({id:STOPS[0].opts[0].id,r:1});
+ if(Math.random()>.25)picks[Math.floor(Math.random()*picks.length)].note=NOTES[Math.floor(Math.random()*NOTES.length)];
+ return{key:seq++,name:NAMES[seq%NAMES.length],picks,t:Date.now()};
+}
+let HISTORY=[];for(let i=0;i<22;i++)HISTORY.unshift(randomVisitor());
+const BASE=37;
+function pctPicked(id){const k=HISTORY.filter(c=>c.picks.some(p=>p.id===id)).length;return Math.round(100*k/HISTORY.length)}
+
+/* ---------- projector 1 ---------- */
+const wall=document.getElementById('wall');
+const SLOTS=[{x:50,y:52,s:1.35},{x:16,y:30,s:.8},{x:84,y:30,s:.76},{x:13,y:76,s:.66},{x:87,y:76,s:.64},{x:36,y:15,s:.5},{x:64,y:14,s:.48},{x:33,y:90,s:.44},{x:67,y:90,s:.42}];
+const els=new Map();
+function renderWall(){
+ const vis=HISTORY.slice(0,SLOTS.length);
+ for(const [k,e] of els){if(!vis.find(c=>c.key===k)){e.style.opacity=0;e.style.transform+=' scale(.6)';setTimeout(()=>e.remove(),1200);els.delete(k)}}
+ vis.forEach((c,i)=>{
+  let e=els.get(c.key);
+  if(!e){e=document.createElement('div');e.className='wp'+(c.mine?' mine':'');e.innerHTML=pageHTML(c);e.style.left='50%';e.style.top='120%';e.style.transform='translate(-50%,-50%) scale(1.8)';wall.appendChild(e);els.set(c.key,e);e.offsetWidth}
+  const s=SLOTS[i];e.style.left=s.x+'%';e.style.top=s.y+'%';e.style.zIndex=40-i;
+  e.style.opacity=i?Math.max(.45,1-i*.07):1;
+  e.style.transform=`translate(-50%,-50%) scale(${s.s}) rotate(${i?(i%2?-3:3):0}deg)`;
+  e.style.filter=i?`sepia(${Math.min(.85,i*.12)}) brightness(${1-i*.06})`:'none';
+ });
+ let sv='<svg class="threads" viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true">';
+ for(let a=0;a<vis.length;a++)for(let b=a+1;b<vis.length;b++){
+  if(vis[a].picks.some(p=>vis[b].picks.some(q=>q.id===p.id))){const A=SLOTS[a],B=SLOTS[b];
+   sv+=`<path d="M${A.x*1.6} ${A.y*.9} Q${(A.x+B.x)*.8} ${Math.max(A.y,B.y)*.9+6} ${B.x*1.6} ${B.y*.9}" fill="none" stroke="#C2412D" stroke-width="${a===0?.5:.22}" opacity="${a===0?.9:.35}"/>`}}
+ const old=wall.querySelector('svg.threads');if(old)old.remove();wall.insertAdjacentHTML('afterbegin',sv+'</svg>');
+ const f=HISTORY[0],top=f.picks[0],others=HISTORY.slice(1).filter(c=>c.picks.some(p=>p.id===top.id)).length;
+ document.getElementById('shared').textContent=`${others+BASE} others also photographed “${ALL[top.id].t}”`;
+ document.getElementById('count').textContent=`${HISTORY.length+BASE*3} collections today`;
+ document.getElementById('now').textContent=`Just now · ${f.name}`;
+ const g=document.getElementById('glow');g.classList.add('on');setTimeout(()=>g.classList.remove('on'),900);
+}
+
+/* ---------- projector 2: grid of the latest pages, each with its own QR ---------- */
+function ago(t){const s=Math.round((Date.now()-t)/1000);return s<45?'just now':s<3600?`${Math.round(s/60)} min ago`:'earlier'}
+function renderTiles(fresh){
+ const el=document.getElementById('tiles');
+ el.innerHTML=HISTORY.slice(0,8).map((c,i)=>`<div class="tile${c.mine?' mine':''}${fresh&&i===0?' new':''}"><div class="pg">${pageHTML(c)}</div><div class="meta"><canvas width="21" height="21" data-k="${c.key}"></canvas><div><div class="nm">${esc(c.name)}</div><div class="ag">${ago(c.t)} · /k/${code(c)}</div></div></div></div>`).join('');
+ el.querySelectorAll('canvas').forEach(cv=>{const c=HISTORY.find(h=>h.key==cv.dataset.k);drawQR(cv,c.key+c.name)});
+}
+
+function addToWall(c){HISTORY.unshift(c);HISTORY=HISTORY.slice(0,60);renderWall();renderTiles(true)}
+HISTORY.forEach((c,i)=>c.t=Date.now()-(i+1)*95000);
+renderWall();renderTiles(false);
+let auto=true;setInterval(()=>auto&&addToWall(randomVisitor()),9000);
+document.getElementById('sim').onclick=()=>addToWall(randomVisitor());
+const ab=document.getElementById('auto');ab.onclick=()=>{auto=!auto;ab.textContent='Auto: '+(auto?'on':'off');ab.setAttribute('aria-pressed',auto)};
+document.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>{try{const el=document.getElementById(b.dataset.fs);const p=el.requestFullscreen&&el.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}});
+
+/* ---------- phone flow ---------- */
+const view=document.getElementById('view');
+let S;
+function reset(){S={step:'welcome',name:'',stop:0,picks:STOPS.map(()=>null),aim:null,slide:0}}
+function progress(){return `<div class="progress">${STOPS.map((_,i)=>`<i class="${i<=S.stop?'on':''}"></i>`).join('')}</div>`}
+const POS=[[27,34],[73,34],[27,72],[73,72]];
+function render(){
+ if(S.step==='welcome'){
+  view.innerHTML=`<div class="slide">
+   <div class="eyebrow" style="color:var(--ink-2)">Scanned at the 3rd floor entrance</div>
+   <h2>Vargas collected for sixty years. Today, you collect for one visit.</h2>
+   <p>At four stops, a prompt tells you what to photograph. Add a line on why if you like. At the exit, your photos become a scrapbook page on the wall.</p>
+   <div class="field"><label for="nm">Your name or nickname</label><input id="nm" maxlength="16" placeholder="Bea" value="${esc(S.name)}" autocomplete="off"><div class="err" id="e"></div></div>
+   <button class="btn pbtn" id="go">Open camera</button></div>`;
+  const nm=document.getElementById('nm');nm.oninput=()=>document.getElementById('e').textContent='';
+  document.getElementById('go').onclick=()=>{const v=nm.value.trim();if(!v){document.getElementById('e').textContent='Add a name so your page has a collector.';return}S.name=v;S.step='stop';S.aim=null;render()};
+ }
+ else if(S.step==='stop'){
+  const st=STOPS[S.stop],cur=S.picks[S.stop];
+  const aimI=S.aim==null?-1:st.opts.findIndex(o=>o.id===S.aim);
+  const tf=aimI<0?'':`transform-origin:${POS[aimI][0]}% ${POS[aimI][1]}%;transform:scale(2.05)`;
+  view.innerHTML=`${progress()}
+   <div><div class="eyebrow" style="color:var(--ink-2)">Stop ${S.stop+1} of 4 · ${st.zone}</div></div>
+   <h2 style="font-size:20px">${st.q}</h2>
+   <div class="vf${aimI>=0&&!cur?' framed':''}" id="vf">
+    <div class="scene" style="${cur?'':tf}">${st.opts.map(o=>`<button class="work" data-id="${o.id}" aria-label="Aim at ${esc(o.t)}"><span class="art">${art(o)}</span><small>${o.t}</small></button>`).join('')}</div>
+    <div class="brackets"><i></i><i></i><i></i><i></i></div>
+    ${cur?`<div class="shot"><span class="art">${shot(cur)}</span></div><span class="badge">Captured</span>`:`<div class="vfhint">${aimI<0?'TAP A PIECE TO AIM':'FRAMED · TAP THE SHUTTER'}</div><div class="vfrec">● CAMERA · ${st.where.toUpperCase()}</div>`}
+    <div class="flash" id="fl"></div>
+   </div>
+   <div class="camrow">
+    <label class="small" style="justify-self:start">Phone camera<input type="file" accept="image/*" capture="environment" id="ph"></label>
+    ${cur?`<button class="small" id="retake" style="justify-self:center">Retake</button>`:`<button class="shutter" id="snap" aria-label="Take photo"${aimI<0?' disabled':''}></button>`}
+    <button class="small" id="skip" style="justify-self:end">Skip stop</button>
+   </div>
+   ${cur?`<div class="field"><label for="nt">Why this one? (optional)</label><textarea id="nt" rows="2" maxlength="60" placeholder="Parang si Lola.">${esc(cur.note||'')}</textarea></div>
+   <button class="btn pbtn" id="nx">${S.stop<3?'Next stop':'Finish my collection'}</button>`:`<div class="err" id="e"></div>`}`;
+  view.querySelectorAll('.work').forEach(b=>b.onclick=()=>{if(S.picks[S.stop])return;S.aim=b.dataset.id;render()});
+  const capture=photo=>{S.picks[S.stop]={id:S.aim,photo,r:Math.round(Math.random()*8-4)};const fl=document.getElementById('fl');fl.classList.add('go');setTimeout(render,180)};
+  const snap=document.getElementById('snap');if(snap)snap.onclick=()=>capture(null);
+  document.getElementById('ph').onchange=ev=>{const f=ev.target.files[0];if(!f)return;if(S.aim==null){document.getElementById('e')&&(document.getElementById('e').textContent='Tap the piece you are shooting first, so your photo is tagged.');return}if(S.picks[S.stop])S.picks[S.stop].photo=URL.createObjectURL(f);else capture(URL.createObjectURL(f));render()};
+  const rt=document.getElementById('retake');if(rt)rt.onclick=()=>{S.picks[S.stop]=null;S.aim=null;render()};
+  const nt=document.getElementById('nt');if(nt)nt.oninput=ev=>{S.picks[S.stop].note=ev.target.value};
+  const adv=()=>{S.aim=null;if(S.stop<3){S.stop++;render()}else{S.step='wrap';S.slide=0;render()}};
+  const nx=document.getElementById('nx');if(nx)nx.onclick=adv;
+  document.getElementById('skip').onclick=()=>{S.picks[S.stop]=null;adv()};
+ }
+ else if(S.step==='wrap'){
+  const picks=S.picks.filter(Boolean);
+  const slides=[];
+  slides.push(`<div class="eyebrow" style="color:var(--ink-2)">Your Vargas, ${esc(S.name)}</div><div class="big">${picks.length}</div><h2>photo${picks.length===1?'':'s'} collected in one visit.</h2><p>Vargas needed a whole museum for his. Yours fits on one page.</p>`);
+  if(picks.length){
+   const tally={K:0,Ka:0,Kn:0};picks.forEach(p=>tally[ALL[p.id].th]++);
+   const top=Object.entries(tally).sort((a,b)=>b[1]-a[1])[0][0],[tn,td]=TYPES[top];
+   slides.push(`<div class="eyebrow" style="color:var(--ink-2)">Your collector type</div><h2 style="font-size:36px">${tn}</h2><p>${td}</p>`);
+   slides.push(`<div class="eyebrow" style="color:var(--ink-2)">You and other visitors</div><h2 style="font-size:22px">Here's how your photos compare.</h2>${picks.map(p=>{const v=pctPicked(p.id);return `<div class="stat"><span class="art">${shot(p)}</span><div><div style="font-size:13px">${ALL[p.id].t}</div><div style="font-size:12px;color:var(--ink-2)">${v}% of visitors photographed this${v<20?' · a rare pick':''}</div><div class="meter"><b style="width:${v}%"></b></div></div></div>`}).join('')}`);
+  }
+  slides.push(`<div class="eyebrow" style="color:var(--ink-2)">Your page</div><div style="font-size:9px">${pageHTML({name:S.name,picks})}</div><p>Send it to the wall. Your print and QR code will appear on the second screen at the exit.</p><button class="btn pbtn" id="send"${picks.length?'':' disabled'}>Send to the wall</button>`);
+  const last=slides.length-1;S.slide=Math.min(S.slide,last);
+  view.innerHTML=`<div class="dots">${slides.map((_,i)=>`<i class="${i===S.slide?'on':''}"></i>`).join('')}</div><div class="slide">${slides[S.slide]}</div>${S.slide<last?`<div class="row"><button class="btn pbtn alt" id="bk" style="flex:1"${S.slide?'':' disabled'}>Back</button><button class="btn pbtn" id="fw" style="flex:2">Next</button></div>`:''}`;
+  const fw=document.getElementById('fw'),bk=document.getElementById('bk');
+  if(fw)fw.onclick=()=>{S.slide++;render()};if(bk)bk.onclick=()=>{S.slide--;render()};
+  const sd=document.getElementById('send');if(sd)sd.onclick=()=>{addToWall({key:seq++,name:S.name,picks,mine:true,t:Date.now()});S.step='sent';render()};
+ }
+ else if(S.step==='sent'){
+  view.innerHTML=`<div class="slide"><div class="eyebrow" style="color:var(--ink-2)">Sent</div><h2>Look up. Your page is in front on the main wall.</h2><p>Your print and QR code are on the second screen. Scan it to keep your page.</p><button class="btn pbtn alt" id="again">Collect again as someone else</button></div>`;
+  document.getElementById('again').onclick=()=>{reset();render()};
+ }
+ view.scrollTop=0;
+}
+document.getElementById('restart').onclick=()=>{reset();render()};
+reset();render();
+</script>
