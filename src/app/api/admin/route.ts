@@ -29,3 +29,15 @@ export async function POST(req: Request) {
   await DB.prepare("UPDATE collections SET hidden = ? WHERE id = ?").bind(hidden ? 1 : 0, id).run();
   return Response.json({ ok: true });
 }
+
+// Delete one page and its photos for good.
+export async function DELETE(req: Request) {
+  if (!(await authorized(req))) return Response.json({ error: "Wrong staff key." }, { status: 401 });
+  const { id } = (await req.json()) as { id: string };
+  const DB = await db();
+  await DB.batch([
+    DB.prepare("DELETE FROM photos WHERE id IN (SELECT json_extract(value, '$.photoId') FROM collections, json_each(collections.picks) WHERE collections.id = ?)").bind(id),
+    DB.prepare("DELETE FROM collections WHERE id = ?").bind(id),
+  ]);
+  return Response.json({ ok: true });
+}
