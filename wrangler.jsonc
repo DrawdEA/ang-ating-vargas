@@ -12,7 +12,7 @@
 		{
 			"binding": "DB",
 			"database_name": "vargas",
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "732e572d-b639-48a4-a887-efd234c645cb",
 			"migrations_dir": "migrations"
 		}
 	]
