@@ -132,6 +132,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .admin-help b { color: var(--fg); font-weight: 500; }
 .admin-err { color: #e7a797; }
 .admin-actions { display: flex; gap: 8px; }
+.admin-tests { display: flex; gap: 8px; flex-wrap: wrap; }
+.ghost:disabled { opacity: 0.5; cursor: default; }
+.test-badge { margin-left: 8px; font: 500 10px var(--f-mono), monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--gold); border-radius: 999px; padding: 1px 7px; vertical-align: middle; }
 .admin-login { display: flex; gap: 10px; flex-wrap: wrap; }
 .admin-login input { flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--night-2); color: var(--fg); font-size: 16px; }
 .ghost.danger { color: #e7a797; }

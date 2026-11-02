@@ -1,3 +1,4 @@
+import { isAdmin } from "@/lib/admin";
 import { db, latestFeed, newId } from "@/lib/db";
 import { isClean } from "@/lib/moderation";
 import { STOPS } from "@/lib/stops";
@@ -16,6 +17,7 @@ export async function GET(req: Request) {
 type IncomingPick = { stop: number; note?: string; r?: number };
 
 // Body: multipart form with `name`, `onWall`, `picks` (JSON) and one `photo_<stop>` file per pick.
+// The admin page also sends `test=1` with the admin key to mark a page as a test page.
 export async function POST(req: Request) {
   const form = await req.formData();
   const name = String(form.get("name") ?? "").trim();
@@ -57,9 +59,10 @@ export async function POST(req: Request) {
   }
 
   const id = newId();
+  const isTest = form.get("test") === "1" && (await isAdmin(req));
   picks.sort((a, b) => a.stop - b.stop);
   statements.push(
-    DB.prepare("INSERT INTO collections (id, name, picks, on_wall, created_at) VALUES (?, ?, ?, ?, ?)").bind(id, name, JSON.stringify(picks), onWall ? 1 : 0, now),
+    DB.prepare("INSERT INTO collections (id, name, picks, on_wall, is_test, created_at) VALUES (?, ?, ?, ?, ?, ?)").bind(id, name, JSON.stringify(picks), onWall ? 1 : 0, isTest ? 1 : 0, now),
   );
   await DB.batch(statements);
   return Response.json({ id });

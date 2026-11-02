@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ScrapbookPage } from "@/components/scrapbook-page";
+import { sendTestPage } from "@/lib/mock";
 import type { Collection } from "@/lib/types";
 
-type AdminItem = Collection & { onWall: boolean; hidden: boolean };
+type AdminItem = Collection & { onWall: boolean; hidden: boolean; isTest: boolean };
 
 const STORAGE = "vargas-admin-key";
 
@@ -16,6 +17,7 @@ export default function Admin() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const load = useCallback(async (k: string) => {
     const res = await fetch("/api/admin", { headers: { "x-admin-key": k }, cache: "no-store" });
@@ -69,6 +71,32 @@ export default function Admin() {
     call("DELETE", { id });
   };
 
+  const addTests = async (count: number) => {
+    setAdding(true);
+    setError("");
+    try {
+      // One at a time, so each page arrives on the wall separately.
+      for (let i = 0; i < count; i++) {
+        await sendTestPage(key);
+        await load(key);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't add a test page.");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const clearTests = () => {
+    if (confirming !== "tests") {
+      setConfirming("tests");
+      setTimeout(() => setConfirming((c) => (c === "tests" ? null : c)), 4000);
+      return;
+    }
+    setConfirming(null);
+    call("DELETE", { allTests: true });
+  };
+
   const copyLink = async () => {
     const link = `${window.location.origin}/admin#key=${encodeURIComponent(key)}`;
     try {
@@ -103,6 +131,7 @@ export default function Admin() {
   }
 
   const live = items.filter((i) => !i.hidden).length;
+  const tests = items.filter((i) => i.isTest).length;
 
   return (
     <main className="doc">
@@ -122,7 +151,23 @@ export default function Admin() {
         <li>
           <b>Copy admin link</b> to give a groupmate access. Anyone with the link can hide and delete.
         </li>
+        <li>
+          <b>Add test page</b> sends a fake page to the screens. Clear them all before the real demo.
+        </li>
       </ul>
+      <div className="admin-tests">
+        <button className="ghost" disabled={adding} onClick={() => addTests(1)}>
+          {adding ? "Adding\u2026" : "Add test page"}
+        </button>
+        <button className="ghost" disabled={adding} onClick={() => addTests(5)}>
+          Add 5
+        </button>
+        {tests > 0 && (
+          <button className={`ghost danger${confirming === "tests" ? " armed" : ""}`} onClick={clearTests}>
+            {confirming === "tests" ? "Tap to confirm" : `Delete ${tests} test page${tests === 1 ? "" : "s"}`}
+          </button>
+        )}
+      </div>
       {error && <p className="admin-err">{error}</p>}
       <p>
         {items.length} page{items.length === 1 ? "" : "s"} · {live} showing
@@ -134,7 +179,10 @@ export default function Admin() {
               <ScrapbookPage name={item.name} picks={item.picks} createdAt={item.createdAt} />
             </a>
             <div>
-              <div style={{ color: "var(--fg)" }}>{item.name}</div>
+              <div style={{ color: "var(--fg)" }}>
+                {item.name}
+                {item.isTest && <span className="test-badge">Test</span>}
+              </div>
               <div style={{ fontSize: 13, color: "var(--fg-2)" }}>
                 {new Date(item.createdAt).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })} · {item.hidden ? "Hidden" : item.onWall ? "On the wall" : "Private"}
               </div>
