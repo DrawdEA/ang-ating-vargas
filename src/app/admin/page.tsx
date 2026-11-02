@@ -43,7 +43,6 @@ export default function Admin() {
 
   return (
     <main className="doc">
-      <div className="eyebrow">Staff only</div>
       <h1>Moderate pages</h1>
       <form
         style={{ display: "flex", gap: 10, flexWrap: "wrap" }}

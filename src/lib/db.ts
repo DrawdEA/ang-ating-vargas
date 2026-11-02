@@ -17,15 +17,11 @@ const toCollection = (r: Row): Collection => ({
 
 export async function latestFeed(limit: number): Promise<Feed> {
   const DB = await db();
-  const [latest, all] = await DB.batch<Row>([
+  const [latest, count] = await DB.batch<Row & { n: number }>([
     DB.prepare("SELECT id, name, picks, created_at FROM collections WHERE hidden = 0 AND on_wall = 1 ORDER BY created_at DESC LIMIT ?").bind(limit),
-    DB.prepare("SELECT picks FROM collections WHERE hidden = 0"),
+    DB.prepare("SELECT COUNT(*) AS n FROM collections WHERE hidden = 0"),
   ]);
-  const counts: Record<string, number> = {};
-  for (const r of all.results) {
-    for (const id of new Set((JSON.parse(r.picks) as Pick[]).map((p) => p.artworkId))) counts[id] = (counts[id] ?? 0) + 1;
-  }
-  return { items: latest.results.map(toCollection), total: all.results.length, counts };
+  return { items: latest.results.map(toCollection), total: count.results[0]?.n ?? 0 };
 }
 
 export async function getCollection(id: string): Promise<Collection | null> {

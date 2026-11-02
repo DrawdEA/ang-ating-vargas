@@ -11,8 +11,6 @@
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "db:migrate:local": "wrangler d1 migrations apply vargas --local",
     "db:migrate:remote": "wrangler d1 migrations apply vargas --remote",
-    "db:seed:local": "node scripts/seed.mjs > .wrangler/seed.sql && wrangler d1 execute vargas --local --file .wrangler/seed.sql",
-    "db:seed:remote": "node scripts/seed.mjs > .wrangler/seed.sql && wrangler d1 execute vargas --remote --file .wrangler/seed.sql",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

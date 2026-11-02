@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { ScrapbookPage } from "@/components/scrapbook-page";
 import { useFeed } from "@/lib/use-feed";
-import { ARTWORKS } from "@/lib/stops";
 import type { Collection } from "@/lib/types";
 
 // Screen 1 (projector): newest page front and center, older pages pushed back and sepia.
@@ -20,8 +19,6 @@ const SLOTS = [
 ];
 const FRESH_MS = 60_000;
 
-const shares = (a: Collection, b: Collection) => a.picks.some((p) => b.picks.some((q) => q.artworkId === p.artworkId));
-
 export default function Wall() {
   const feed = useFeed(SLOTS.length);
   const [now, setNow] = useState(() => Date.now());
@@ -31,49 +28,17 @@ export default function Wall() {
   }, []);
 
   const items = feed?.items ?? [];
-  const front = items[0];
-  const topPick = front?.picks[0];
-  const others = topPick ? Math.max(0, (feed?.counts[topPick.artworkId] ?? 1) - 1) : 0;
 
   return (
     <main className="screen" aria-label="Ang Ating Vargas wall">
-      <svg className="threads" viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true">
-        {items.flatMap((a, i) =>
-          items.slice(i + 1).map((b, j) => {
-            if (!shares(a, b)) return null;
-            const A = SLOTS[i];
-            const B = SLOTS[i + 1 + j];
-            return (
-              <path
-                key={`${a.id}-${b.id}`}
-                d={`M${A.x * 1.6} ${A.y * 0.9} Q${(A.x + B.x) * 0.8} ${Math.max(A.y, B.y) * 0.9 + 6} ${B.x * 1.6} ${B.y * 0.9}`}
-                fill="none"
-                stroke="#C2412D"
-                strokeWidth={i === 0 ? 0.5 : 0.22}
-                opacity={i === 0 ? 0.9 : 0.35}
-              />
-            );
-          }),
-        )}
-      </svg>
-
       {items.map((c, i) => (
         <WallPage key={c.id} c={c} slot={i} fresh={i === 0 && now - c.createdAt < FRESH_MS} />
       ))}
 
-      {feed && !items.length && <div className="empty">The wall is waiting for its first collection.</div>}
+      {feed && !items.length && <div className="empty">Waiting for the first collection</div>}
 
-      <div className="hud title">
-        Ang Ating Vargas
-        <small>Our own Vargas · visitor collections</small>
-      </div>
-      {feed && <div className="hud count">{feed.total} collections so far</div>}
-      {front && <div className="hud now">Newest · {front.name}</div>}
-      {topPick && (
-        <div className="hud shared">
-          {others} other{others === 1 ? "" : "s"} also photographed &ldquo;{ARTWORKS[topPick.artworkId].title}&rdquo;
-        </div>
-      )}
+      <div className="hud title">Ang Ating Vargas</div>
+      {feed && <div className="hud count">{feed.total}</div>}
     </main>
   );
 }

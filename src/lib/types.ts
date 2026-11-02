@@ -1,8 +1,7 @@
 export type Pick = {
   stop: number;
-  artworkId: string;
+  photoId: string;
   note?: string;
-  photoId?: string; // absent for seeded pages and sample shots, which draw the piece instead
   r?: number; // tilt of the polaroid, in degrees
 };
 
@@ -13,8 +12,4 @@ export type Collection = {
   createdAt: number;
 };
 
-export type Feed = {
-  items: Collection[];
-  total: number;
-  counts: Record<string, number>; // how many collections photographed each artwork
-};
+export type Feed = { items: Collection[]; total: number };

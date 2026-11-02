@@ -1,6 +1,6 @@
 import { db, latestFeed, newId } from "@/lib/db";
 import { isClean } from "@/lib/moderation";
-import { ARTWORKS, STOPS } from "@/lib/stops";
+import { STOPS } from "@/lib/stops";
 import type { Pick } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +13,9 @@ export async function GET(req: Request) {
   return Response.json(await latestFeed(limit), { headers: { "cache-control": "no-store" } });
 }
 
-type IncomingPick = { stop: number; artworkId: string; note?: string; photo?: string; r?: number };
+type IncomingPick = { stop: number; note?: string; r?: number };
 
+// Body: multipart form with `name`, `onWall`, `picks` (JSON) and one `photo_<stop>` file per pick.
 export async function POST(req: Request) {
   const form = await req.formData();
   const name = String(form.get("name") ?? "").trim();
@@ -34,25 +35,24 @@ export async function POST(req: Request) {
   const now = Date.now();
   const statements: D1PreparedStatement[] = [];
   const picks: Pick[] = [];
-  const seenStops = new Set<number>();
+  const seen = new Set<number>();
 
   for (const p of incoming) {
-    const stop = STOPS[p.stop];
-    if (!stop || seenStops.has(p.stop) || !stop.artworks.some((a) => a.id === p.artworkId)) return bad("One of your photos is tagged to the wrong stop.");
-    seenStops.add(p.stop);
+    if (!STOPS[p.stop] || seen.has(p.stop)) return bad("Your photos got mixed up. Start a new collection.");
+    seen.add(p.stop);
     const note = (p.note ?? "").trim().slice(0, 60);
-    if (note && !isClean(note)) return bad(`Your note on “${ARTWORKS[p.artworkId].title}” can't go on the wall. Edit it and send again.`);
+    if (note && !isClean(note)) return bad(`Your note at stop ${p.stop + 1} can't go on the wall. Edit it and send again.`);
 
-    const pick: Pick = { stop: p.stop, artworkId: p.artworkId, r: Math.max(-6, Math.min(6, Math.round(Number(p.r) || 0))) };
-    if (note) pick.note = note;
-
-    const file = p.photo ? form.get(p.photo) : null;
-    if (file instanceof File) {
-      if (!PHOTO_TYPES.has(file.type) || file.size > MAX_PHOTO_BYTES) return bad("One photo is too large or not an image. Retake it and send again.");
-      pick.photoId = newId(14);
-      const data = Buffer.from(await file.arrayBuffer()).toString("base64");
-      statements.push(DB.prepare("INSERT INTO photos (id, mime, data, created_at) VALUES (?, ?, ?, ?)").bind(pick.photoId, file.type, data, now));
+    const file = form.get(`photo_${p.stop}`);
+    if (!(file instanceof File) || !PHOTO_TYPES.has(file.type) || file.size > MAX_PHOTO_BYTES) {
+      return bad(`The photo at stop ${p.stop + 1} didn't come through. Retake it and send again.`);
     }
+    const photoId = newId(14);
+    statements.push(
+      DB.prepare("INSERT INTO photos (id, mime, data, created_at) VALUES (?, ?, ?, ?)").bind(photoId, file.type, Buffer.from(await file.arrayBuffer()).toString("base64"), now),
+    );
+    const pick: Pick = { stop: p.stop, photoId, r: Math.max(-6, Math.min(6, Math.round(Number(p.r) || 0))) };
+    if (note) pick.note = note;
     picks.push(pick);
   }
 

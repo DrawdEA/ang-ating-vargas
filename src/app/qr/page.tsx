@@ -28,8 +28,7 @@ export default function QrGrid() {
     <main className="screen" aria-label="Scan to keep your page">
       <div className="qrwall">
         <div className="hd">
-          <b>Kunin ang iyong Vargas</b>
-          <span>FIND YOUR PAGE · SCAN TO KEEP IT</span>
+          <b>Scan to keep your Vargas</b>
         </div>
         <div className="tiles">
           {items.map((c) => (
@@ -37,7 +36,7 @@ export default function QrGrid() {
           ))}
         </div>
       </div>
-      {feed && !items.length && <div className="empty">Pages appear here as visitors finish.</div>}
+      {feed && !items.length && <div className="empty">No pages yet</div>}
     </main>
   );
 }

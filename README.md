@@ -7,36 +7,32 @@ A participatory experience for the 3rd floor of the UP Vargas Museum. Visitors p
 | Screen | Link | Who uses it |
 |---|---|---|
 | Visitor app | `/` | Visitors, on their own phones (open it by scanning the entrance QR) |
-| Main wall (Screen 1) | `/wall` | The projector. Newest page in front; red threads link pages that photographed the same piece |
+| Main wall (Screen 1) | `/wall` | The projector. Newest page in front, older pages pushed back |
 | QR grid (Screen 2) | `/qr` | The monitor beside the wall. The 8 newest pages, each with a QR code to the visitor's own page |
 | Visitor's page | `/k/<id>` | Opened from the QR code; the visitor can bookmark or share it |
-| Presentation mode | `/tour` | For the class demo: a start slide with the entrance QR, then each stop's four pieces shown large so the audience can photograph them. Arrow keys or click to advance |
+| Presentation mode | `/tour` | For the class demo: a start slide with the entrance QR, then one slide per stop's prompt. Arrow keys or click to advance |
 | Staff moderation | `/admin` | Museum staff hide or restore pages. Needs the staff key |
 
 **As a visitor:**
-1. Open `/` on a phone, enter a name, and choose whether your page goes on the wall.
-2. At each stop, tap the piece you'll photograph, then take the photo. Add a note if you like. You can skip a stop.
-3. Swipe through the recap (photo count, collector type, how your picks compare with other visitors), then send your page to the wall.
-4. Find your page on `/qr` and scan its QR code to keep it.
+1. Open `/` on a phone and enter a name. Untick "Show my page on the wall" to keep it private.
+2. At each stop, read the prompt and take a photo. Add a note if you like, or skip the stop. The film strip at the top fills in as you collect.
+3. Send your page to the wall, then scan its QR code on `/qr` (or tap "Open my page") to keep it.
 
-No camera (for example on a laptop)? After choosing a piece, tap **Use a sample shot**.
-
-**For the class demo:** put `/tour` on the class projector. Have classmates scan the start slide's QR code, then advance through the stops so they can photograph each slide. When they send their pages, switch to `/wall` for the reveal, and show `/qr` on a second screen so they can scan their own pages.
+**For the class demo:** put `/tour` on the TV and have classmates scan the start slide. Advance through the stops while they take photos, then switch to `/wall` for the reveal and `/qr` so they can keep their pages.
 
 ## Stack
 
-Next.js 15 (App Router, TypeScript) deployed to Cloudflare Workers through OpenNext, with Cloudflare D1 storing pages and the compressed photos. Screens poll for new pages every 3 seconds. QR codes come from the `qrcode` package; photos are resized on the phone before upload.
+Next.js 15 (App Router, TypeScript) deployed to Cloudflare Workers through OpenNext, with Cloudflare D1 storing pages and the compressed photos. Screens check for new pages every 3 seconds. QR codes come from the `qrcode` package; photos are resized on the phone before upload.
 
-## Real artwork photos
+## Editing the stops
 
-Each piece shows a drawn placeholder until a photo is added. Put the photo in `public/art/` and set its `image` in [src/lib/stops.ts](src/lib/stops.ts), for example `image: "/art/oath.jpg"`. The stops' prompts and pieces are also edited there.
+The four prompts live in [src/lib/stops.ts](src/lib/stops.ts). Each stop can also list `images` (files in `public/art/`) to show on its `/tour` slide.
 
 ## Development
 
 ```bash
 npm install
 npm run db:migrate:local
-npm run db:seed:local   # 12 sample pages so the wall isn't empty
 npm run dev
 ```
 
@@ -47,7 +43,6 @@ Copy `.dev.vars.example` to `.dev.vars` and set `ADMIN_KEY` to use `/admin` loca
 ```bash
 npx wrangler d1 create vargas          # once; paste the database_id into wrangler.jsonc
 npm run db:migrate:remote
-npm run db:seed:remote                 # optional sample pages
 npx wrangler secret put ADMIN_KEY      # staff key for /admin
 npm run deploy
 ```

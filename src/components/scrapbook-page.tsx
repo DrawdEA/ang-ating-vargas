@@ -1,4 +1,4 @@
-import { Shot } from "./art";
+import { Shot } from "./shot";
 import type { Pick } from "@/lib/types";
 
 const ROT = [-6, 4, -3, 5];
@@ -23,17 +23,11 @@ export function ScrapbookPage({ name, picks, createdAt, srcs }: { name: string; 
           <span className="tape" />
         </div>
       ))}
-      <div className="pn">
-        {note ? (
-          <>
-            &ldquo;{note}&rdquo; <small>&mdash; {name}</small>
-          </>
-        ) : (
-          <small>
-            {shown.length} photo{shown.length === 1 ? "" : "s"} by {name}
-          </small>
-        )}
-      </div>
+      {note && (
+        <div className="pn">
+          &ldquo;{note}&rdquo; <small>&mdash; {name}</small>
+        </div>
+      )}
     </div>
   );
 }
