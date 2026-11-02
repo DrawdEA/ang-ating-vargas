@@ -11,7 +11,7 @@ A participatory experience for the 3rd floor of the UP Vargas Museum. Visitors p
 | QR grid (Screen 2) | `/qr` | The monitor beside the wall. The 8 newest pages, each with a QR code to the visitor's own page |
 | Visitor's page | `/k/<id>` | Opened from the QR code; the visitor can bookmark or share it |
 | Presentation mode | `/tour` | For the class demo: a start slide with the entrance QR, then one slide per stop's prompt. Arrow keys or click to advance |
-| Staff moderation | `/admin` | Museum staff hide or restore pages. Needs the staff key |
+| Admin | `/admin` | Hide or delete pages. Needs the admin key |
 
 **As a visitor:**
 1. Open `/` on a phone and enter a name. Untick "Show my page on the wall" to keep it private.
@@ -43,7 +43,7 @@ Copy `.dev.vars.example` to `.dev.vars` and set `ADMIN_KEY` to use `/admin` loca
 ```bash
 npx wrangler d1 create vargas          # once; paste the database_id into wrangler.jsonc
 npm run db:migrate:remote
-npx wrangler secret put ADMIN_KEY      # staff key for /admin
+npx wrangler secret put ADMIN_KEY      # admin key for /admin
 npm run deploy
 ```
 

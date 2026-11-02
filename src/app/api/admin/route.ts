@@ -11,9 +11,9 @@ async function authorized(req: Request) {
 
 type Row = { id: string; name: string; picks: string; on_wall: number; hidden: number; created_at: number };
 
-// Staff list: newest 100 pages, including hidden ones.
+// Admin list: newest 100 pages, including hidden ones.
 export async function GET(req: Request) {
-  if (!(await authorized(req))) return Response.json({ error: "Wrong staff key." }, { status: 401 });
+  if (!(await authorized(req))) return Response.json({ error: "Wrong admin key." }, { status: 401 });
   const DB = await db();
   const { results } = await DB.prepare("SELECT id, name, picks, on_wall, hidden, created_at FROM collections ORDER BY created_at DESC LIMIT 100").all<Row>();
   return Response.json({
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
 
 // Hide or restore one page.
 export async function POST(req: Request) {
-  if (!(await authorized(req))) return Response.json({ error: "Wrong staff key." }, { status: 401 });
+  if (!(await authorized(req))) return Response.json({ error: "Wrong admin key." }, { status: 401 });
   const { id, hidden } = (await req.json()) as { id: string; hidden: boolean };
   const DB = await db();
   await DB.prepare("UPDATE collections SET hidden = ? WHERE id = ?").bind(hidden ? 1 : 0, id).run();
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
 // Delete one page and its photos for good.
 export async function DELETE(req: Request) {
-  if (!(await authorized(req))) return Response.json({ error: "Wrong staff key." }, { status: 401 });
+  if (!(await authorized(req))) return Response.json({ error: "Wrong admin key." }, { status: 401 });
   const { id } = (await req.json()) as { id: string };
   const DB = await db();
   await DB.batch([

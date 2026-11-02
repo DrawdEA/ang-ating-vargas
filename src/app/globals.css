@@ -127,16 +127,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .admin-row { display: grid; grid-template-columns: 150px 1fr auto; gap: 14px; align-items: center; border-top: 1px solid var(--line); padding-top: 10px; }
 .admin-row .pg { font-size: 6px; display: block; }
 .admin-row.hidden .pg { opacity: 0.35; }
-.staff-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-.staff-help { margin: 0; padding-left: 18px; color: var(--fg-2); display: grid; gap: 4px; font-size: 14px; }
-.staff-help b { color: var(--fg); font-weight: 500; }
-.staff-err { color: #e7a797; }
-.staff-actions { display: flex; gap: 8px; }
-.staff-login { display: flex; gap: 10px; flex-wrap: wrap; }
-.staff-login input { flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--night-2); color: var(--fg); font-size: 16px; }
+.admin-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.admin-help { margin: 0; padding-left: 18px; color: var(--fg-2); display: grid; gap: 4px; font-size: 14px; }
+.admin-help b { color: var(--fg); font-weight: 500; }
+.admin-err { color: #e7a797; }
+.admin-actions { display: flex; gap: 8px; }
+.admin-login { display: flex; gap: 10px; flex-wrap: wrap; }
+.admin-login input { flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--night-2); color: var(--fg); font-size: 16px; }
 .ghost.danger { color: #e7a797; }
 .ghost.danger.armed { background: var(--danger); border-color: var(--danger); color: #fff; }
-@media (max-width: 560px) { .admin-row { grid-template-columns: 110px 1fr; } .staff-actions { grid-column: 1 / -1; } .staff-actions .ghost { flex: 1; } }
+@media (max-width: 560px) { .admin-row { grid-template-columns: 110px 1fr; } .admin-actions { grid-column: 1 / -1; } .admin-actions .ghost { flex: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .slot.filled { animation: none; }

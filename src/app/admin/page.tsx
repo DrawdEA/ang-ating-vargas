@@ -8,8 +8,8 @@ type AdminItem = Collection & { onWall: boolean; hidden: boolean };
 
 const STORAGE = "vargas-admin-key";
 
-// Staff page: see every page as it comes in, hide or delete it, and share access with the team.
-// A staff link carries the key in the URL hash (#key=...), which never reaches the server logs.
+// Admin page: see every page as it comes in, hide or delete it, and share access with the team.
+// An admin link carries the key in the URL hash (#key=...), which never reaches the server logs.
 export default function Admin() {
   const [key, setKey] = useState("");
   const [items, setItems] = useState<AdminItem[] | null>(null);
@@ -21,7 +21,7 @@ export default function Admin() {
     const res = await fetch("/api/admin", { headers: { "x-admin-key": k }, cache: "no-store" });
     if (!res.ok) {
       setItems(null);
-      setError("That staff key didn't work.");
+      setError("That admin key didn't work.");
       return false;
     }
     setError("");
@@ -32,7 +32,7 @@ export default function Admin() {
     return true;
   }, []);
 
-  // Sign in from a staff link or an earlier visit, then keep the list fresh.
+  // Sign in from an admin link or an earlier visit, then keep the list fresh.
   useEffect(() => {
     let k = new URLSearchParams(window.location.hash.slice(1)).get("key") ?? "";
     if (k) history.replaceState(null, "", window.location.pathname);
@@ -83,21 +83,21 @@ export default function Admin() {
   if (!items) {
     return (
       <main className="doc">
-        <h1>Staff</h1>
+        <h1>Admin</h1>
         <form
-          className="staff-login"
+          className="admin-login"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!key.trim()) return setError("Enter the staff key.");
+            if (!key.trim()) return setError("Enter the admin key.");
             load(key.trim());
           }}
         >
-          <input id="admin-key" type="password" placeholder="Staff key" aria-label="Staff key" value={key} onChange={(e) => setKey(e.target.value)} />
+          <input id="admin-key" type="password" placeholder="Admin key" aria-label="Admin key" value={key} onChange={(e) => setKey(e.target.value)} />
           <button className="ghost" type="submit">
             Open
           </button>
         </form>
-        {error && <p className="staff-err">{error}</p>}
+        {error && <p className="admin-err">{error}</p>}
       </main>
     );
   }
@@ -106,13 +106,13 @@ export default function Admin() {
 
   return (
     <main className="doc">
-      <div className="staff-head">
-        <h1>Staff</h1>
+      <div className="admin-head">
+        <h1>Admin</h1>
         <button className="ghost" onClick={copyLink}>
-          {copied ? "Link copied" : "Copy staff link"}
+          {copied ? "Link copied" : "Copy admin link"}
         </button>
       </div>
-      <ul className="staff-help">
+      <ul className="admin-help">
         <li>
           <b>Hide</b> takes a page off the screens. You can bring it back.
         </li>
@@ -120,10 +120,10 @@ export default function Admin() {
           <b>Delete</b> removes the page and its photos for good. Tap twice to confirm.
         </li>
         <li>
-          <b>Copy staff link</b> to give a teammate access. Anyone with the link can hide and delete.
+          <b>Copy admin link</b> to give a groupmate access. Anyone with the link can hide and delete.
         </li>
       </ul>
-      {error && <p className="staff-err">{error}</p>}
+      {error && <p className="admin-err">{error}</p>}
       <p>
         {items.length} page{items.length === 1 ? "" : "s"} · {live} showing
       </p>
@@ -139,7 +139,7 @@ export default function Admin() {
                 {new Date(item.createdAt).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })} · {item.hidden ? "Hidden" : item.onWall ? "On the wall" : "Private"}
               </div>
             </div>
-            <div className="staff-actions">
+            <div className="admin-actions">
               <button className="ghost" onClick={() => call("POST", { id: item.id, hidden: !item.hidden })}>
                 {item.hidden ? "Show" : "Hide"}
               </button>
