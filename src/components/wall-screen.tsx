@@ -31,7 +31,6 @@ export function WallScreen() {
 
   return (
     <main className="screen" aria-label="Ang Ating Vargas wall">
-      {items.length > 0 && <div className="front-ellipse" aria-hidden="true" />}
       {/* A dotted thread from each page to the one that arrived before it. */}
       <svg className="threads" viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true">
         {items.slice(1).map((c, j) => {
