@@ -23,7 +23,12 @@ export default async function KeepPage({ params }: Props) {
   return (
     <main className="doc">
       <div className="doc-inner">
-        <div className="caps">UP Vargas Museum · Ang Ating Vargas</div>
+        <div className="swatches" aria-hidden="true">
+          <i className="c-mustard" />
+          <i className="c-mint" />
+          <i className="c-pink" />
+          <i className="c-cobalt" />
+        </div>
         <div style={{ fontSize: "clamp(9px, 2.2vw, 17px)" }}>
           <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />
         </div>

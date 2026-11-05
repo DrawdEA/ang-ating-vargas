@@ -92,7 +92,6 @@ export function VisitorApp() {
 
         {step.kind === "sent" && (
           <div className="grow">
-            <div className="caps">Sent</div>
             <h1>{onWall ? "Look up. You're on the wall." : "Your page is saved."}</h1>
             <a className="btn" href={`/k/${step.id}`}>
               Open my page
@@ -134,10 +133,6 @@ function Welcome(props: { name: string; setName: (v: string) => void; onWall: bo
         <i className="c-mint" />
         <i className="c-pink" />
         <i className="c-cobalt" />
-      </div>
-      <div className="wordmark caps">
-        <span>Vargas Museum</span>
-        <span>3F</span>
       </div>
       <h1>
         Vargas collected for sixty years. <span className="accent">You have one visit.</span>
@@ -217,11 +212,11 @@ function StopScreen(props: { index: number; taken: Taken | null; onTake: (t: Tak
   return (
     <>
       <div>
-        <div className="stop-num">
+        <div className="stop-head">
           <span className={`stop-chip c-${stopColor(props.index)}`}>{props.index + 1}</span>
-          {stop.zone}
+          <span>{stop.zone}</span>
         </div>
-        <h2 style={{ marginTop: 10 }}>{stop.prompt}</h2>
+        <h2 style={{ marginTop: 12 }}>{stop.prompt}</h2>
       </div>
 
       {t ? (
@@ -296,7 +291,6 @@ function Review(props: { name: string; taken: (Taken | null)[]; onSend: () => vo
 
   return (
     <div className="grow">
-      <div className="caps">Your Vargas</div>
       <div style={{ fontSize: 9.5 }}>
         <ScrapbookPage name={props.name} picks={picks} createdAt={now} srcs={entries.map(({ t }) => t.url)} />
       </div>

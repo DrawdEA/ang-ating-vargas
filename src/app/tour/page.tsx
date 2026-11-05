@@ -34,8 +34,11 @@ export default function Tour() {
       {slide.kind === "start" && (
         <>
           <div className="half">
-            <div className="caps" style={{ fontSize: "2.2cqh", marginBottom: "6cqh" }}>
-              Vargas Museum · 3rd floor
+            <div className="swatches big" aria-hidden="true">
+              <i className="c-mustard" />
+              <i className="c-mint" />
+              <i className="c-pink" />
+              <i className="c-cobalt" />
             </div>
             <h1>
               Vargas collected for sixty years. <span className="accent">Scan to start yours.</span>
@@ -50,9 +53,7 @@ export default function Tour() {
       {slide.kind === "stop" && (
         <div className="stop-slide">
           <div className={`big-num c-${stopColor(slide.index)}`}>{slide.index + 1}</div>
-          <div className="caps" style={{ fontSize: "2.2cqh" }}>
-            {STOPS[slide.index].zone}
-          </div>
+          <div className="zone">{STOPS[slide.index].zone}</div>
           <h1>{STOPS[slide.index].prompt}</h1>
           {STOPS[slide.index].images && (
             <div className="works">

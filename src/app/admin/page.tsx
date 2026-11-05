@@ -173,7 +173,7 @@ export default function Admin() {
       </div>
       {error && <p className="admin-err">{error}</p>}
       <p>
-        {items.length} page{items.length === 1 ? "" : "s"} · {live} showing
+        {items.length} page{items.length === 1 ? "" : "s"}, {live} showing
       </p>
       <div className="admin-list">
         {items.map((item) => (
@@ -187,7 +187,7 @@ export default function Admin() {
                 {item.isTest && <span className="test-badge">Test</span>}
               </div>
               <div style={{ fontSize: 13, color: "var(--fg-2)" }}>
-                {new Date(item.createdAt).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })} · {item.hidden ? "Hidden" : item.onWall ? "On the wall" : "Private"}
+                {new Date(item.createdAt).toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })}, {item.hidden ? "hidden" : item.onWall ? "on the wall" : "private"}
               </div>
             </div>
             <div className="admin-actions">
