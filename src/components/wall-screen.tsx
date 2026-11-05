@@ -37,6 +37,13 @@ export function WallScreen() {
   const items = feed?.items ?? [];
   const svgRef = useRef<SVGSVGElement>(null);
 
+  // Pages already there when the screen opens appear in place; only pages that arrive afterwards fly in.
+  const seen = useRef<Set<string> | null>(null);
+  const arriving = new Set(seen.current ? items.filter((c) => !seen.current!.has(c.id)).map((c) => c.id) : []);
+  useEffect(() => {
+    if (feed) seen.current = new Set(feed.items.map((c) => c.id));
+  }, [feed]);
+
   // Each frame, redraw every thread between the pages' current on-screen centers, so the threads
   // stretch and follow the pages while their CSS transitions move them.
   useEffect(() => {
@@ -87,7 +94,7 @@ export function WallScreen() {
         })}
       </svg>
       {items.map((c, i) => (
-        <WallPage key={c.id} c={c} slot={i} fresh={i === 0 && now - c.createdAt < FRESH_MS} />
+        <WallPage key={c.id} c={c} slot={i} arriving={arriving.has(c.id)} fresh={i === 0 && now - c.createdAt < FRESH_MS} />
       ))}
 
       {feed && !items.length && <div className="empty">Waiting for the first page.</div>}
@@ -98,18 +105,28 @@ export function WallScreen() {
   );
 }
 
-// Appears straight in its slot. CSS transitions only move it later, when newer pages push it back.
-function WallPage({ c, slot, fresh }: { c: Collection; slot: number; fresh: boolean }) {
+// A page that arrives while the wall is up rises from below the screen into its slot. CSS transitions
+// then move every page back as newer ones arrive.
+function WallPage({ c, slot, arriving, fresh }: { c: Collection; slot: number; arriving: boolean; fresh: boolean }) {
+  const [placed, setPlaced] = useState(!arriving);
+  useEffect(() => {
+    if (placed) return;
+    // A short timer, not requestAnimationFrame, so the page still settles if the tab is in the background.
+    const t = setTimeout(() => setPlaced(true), 60);
+    return () => clearTimeout(t);
+  }, [placed]);
   const s = SLOTS[slot];
-  const style = {
-    left: `${s.x}%`,
-    top: `${s.y}%`,
-    zIndex: 100 - slot,
-    // Older pages fade into the background and lose their color.
-    opacity: s.fade,
-    transform: `translate(-50%,-50%) scale(${s.s})`,
-    filter: s.gray ? `grayscale(${s.gray})` : "none",
-  };
+  const style = placed
+    ? {
+        left: `${s.x}%`,
+        top: `${s.y}%`,
+        zIndex: 100 - slot,
+        // Older pages fade into the background and lose their color.
+        opacity: s.fade,
+        transform: `translate(-50%,-50%) scale(${s.s})`,
+        filter: s.gray ? `grayscale(${s.gray})` : "none",
+      }
+    : { left: "50%", top: "120%", zIndex: 100 - slot, transform: "translate(-50%,-50%) scale(1.8)" };
   return (
     <div className={`wp${fresh ? " fresh" : ""}`} style={style} data-page={c.id}>
       <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />

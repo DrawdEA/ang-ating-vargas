@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrapbookPage } from "@/components/scrapbook-page";
 import { useFeed } from "@/lib/use-feed";
 import { useQr } from "@/lib/use-qr";
@@ -17,13 +17,20 @@ export function QrScreen() {
 
   const items = feed?.items ?? [];
 
+  // Tiles already there when the screen opens appear in place; only tiles that arrive afterwards slide in.
+  const seen = useRef<Set<string> | null>(null);
+  const arriving = new Set(seen.current ? items.filter((c) => !seen.current!.has(c.id)).map((c) => c.id) : []);
+  useEffect(() => {
+    if (feed) seen.current = new Set(feed.items.map((c) => c.id));
+  }, [feed]);
+
   return (
     <main className="screen" aria-label="Scan to keep your page">
       <div className="qrwall">
         <div className="hd">Scan to keep your Vargas.</div>
         <div className="tiles">
           {items.map((c) => (
-            <Tile key={c.id} c={c} now={now} />
+            <Tile key={c.id} c={c} now={now} arriving={arriving.has(c.id)} />
           ))}
         </div>
       </div>
@@ -40,11 +47,11 @@ function ago(now: number, t: number) {
   return "earlier";
 }
 
-function Tile({ c, now }: { c: Collection; now: number }) {
+function Tile({ c, now, arriving }: { c: Collection; now: number; arriving: boolean }) {
   const qr = useQr(`/k/${c.id}`);
   const fresh = now - c.createdAt < 60_000;
   return (
-    <div className={`tile${fresh ? " fresh" : ""}`}>
+    <div className={`tile${arriving ? " enter" : ""}${fresh ? " fresh" : ""}`}>
       <div className="pg">
         <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />
       </div>
