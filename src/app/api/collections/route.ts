@@ -10,7 +10,7 @@ const MAX_PHOTO_BYTES = 2_000_000;
 const PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export async function GET(req: Request) {
-  const limit = Math.min(30, Math.max(1, Number(new URL(req.url).searchParams.get("limit")) || 9));
+  const limit = Math.min(40, Math.max(1, Number(new URL(req.url).searchParams.get("limit")) || 9));
   return Response.json(await latestFeed(limit), { headers: { "cache-control": "no-store" } });
 }
 

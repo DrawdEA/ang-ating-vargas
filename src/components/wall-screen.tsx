@@ -5,18 +5,25 @@ import { ScrapbookPage } from "@/components/scrapbook-page";
 import { useFeed } from "@/lib/use-feed";
 import type { Collection } from "@/lib/types";
 
-// Screen 1 (projector): newest page front and center, older pages pushed back and faded.
-const SLOTS = [
-  { x: 50, y: 52, s: 1.35 },
-  { x: 16, y: 30, s: 0.8 },
-  { x: 84, y: 30, s: 0.76 },
-  { x: 13, y: 76, s: 0.66 },
-  { x: 87, y: 76, s: 0.64 },
-  { x: 36, y: 15, s: 0.5 },
-  { x: 64, y: 14, s: 0.48 },
-  { x: 33, y: 90, s: 0.44 },
-  { x: 67, y: 90, s: 0.42 },
+// Screen 1 (projector): the newest page front and center, then rings of older pages around it.
+// Each ring out is smaller, more faded and grayer, so the wall holds 31 pages at once.
+type Slot = { x: number; y: number; s: number; fade: number; gray: number };
+const RINGS = [
+  { n: 6, rx: 33, ry: 36, s: 0.62, fade: 0.92, gray: 0.25, turn: 0 },
+  { n: 10, rx: 45, ry: 40, s: 0.4, fade: 0.72, gray: 0.6, turn: 18 },
+  { n: 14, rx: 49, ry: 46, s: 0.28, fade: 0.5, gray: 1, turn: 0 },
 ];
+const SLOTS: Slot[] = [
+  { x: 50, y: 52, s: 1.35, fade: 1, gray: 0 },
+  ...RINGS.flatMap((r) =>
+    Array.from({ length: r.n }, (_, k) => {
+      const a = ((r.turn + (k * 360) / r.n) * Math.PI) / 180;
+      return { x: 50 + r.rx * Math.cos(a), y: 52 + r.ry * Math.sin(a), s: r.s, fade: r.fade, gray: r.gray };
+    }),
+  ),
+];
+// Threads link only the newest pages, so the outer rings stay calm.
+const THREADED = 10;
 const FRESH_MS = 60_000;
 
 export function WallScreen() {
@@ -63,7 +70,7 @@ export function WallScreen() {
     <main className="screen" aria-label="Ang Ating Vargas wall">
       {/* A dotted thread from each page to the one that arrived before it. */}
       <svg ref={svgRef} className="threads" aria-hidden="true">
-        {items.slice(1).map((c, j) => {
+        {items.slice(1, THREADED).map((c, j) => {
           return (
             <path
               key={`${items[j].id}-${c.id}`}
@@ -97,11 +104,11 @@ function WallPage({ c, slot, fresh }: { c: Collection; slot: number; fresh: bool
   const style = {
     left: `${s.x}%`,
     top: `${s.y}%`,
-    zIndex: 40 - slot,
+    zIndex: 100 - slot,
     // Older pages fade into the background and lose their color.
-    opacity: slot ? Math.max(0.4, 1 - slot * 0.08) : 1,
+    opacity: s.fade,
     transform: `translate(-50%,-50%) scale(${s.s})`,
-    filter: slot ? `grayscale(${Math.min(1, slot * 0.2)})` : "none",
+    filter: s.gray ? `grayscale(${s.gray})` : "none",
   };
   return (
     <div className={`wp${fresh ? " fresh" : ""}`} style={style} data-page={c.id}>

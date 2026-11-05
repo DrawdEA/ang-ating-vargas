@@ -84,7 +84,7 @@ img.fill { object-fit: cover; }
 
 /* ---------- screens (projector wall + QR monitor) ---------- */
 .screen { position: fixed; inset: 0; overflow: hidden; container-type: size; background: var(--paper); color: var(--ink); }
-.hud { position: absolute; z-index: 50; }
+.hud { position: absolute; z-index: 200; }
 .hud.title { left: 3cqw; top: 3cqh; font-size: max(18px, 2.6cqw); }
 .hud.count { right: 3cqw; top: 3cqh; font-size: max(14px, 1.6cqw); }
 .wp { position: absolute; width: 24cqw; font-size: 1.05cqw; transition: left 1.2s cubic-bezier(0.2, 0.7, 0.2, 1), top 1.2s cubic-bezier(0.2, 0.7, 0.2, 1), transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 1.2s, filter 1.2s; }
