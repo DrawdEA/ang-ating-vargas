@@ -6,6 +6,7 @@ import { WallScreen } from "@/components/wall-screen";
 import { stopColor } from "@/lib/palette";
 import { useQr } from "@/lib/use-qr";
 import { STOPS } from "@/lib/stops";
+import { Logo } from "@/components/logo";
 
 // Presentation mode for the class demo: the entrance QR, one slide per stop, then the live wall and QR grid.
 // Arrow keys or a click move between slides.
@@ -34,12 +35,7 @@ export default function Tour() {
       {slide.kind === "start" && (
         <>
           <div className="half">
-            <div className="swatches big" aria-hidden="true">
-              <i className="c-mustard" />
-              <i className="c-mint" />
-              <i className="c-pink" />
-              <i className="c-cobalt" />
-            </div>
+            <Logo className="big" />
             <h1>
               Vargas collected for sixty years. <span className="accent">Scan to start yours.</span>
             </h1>

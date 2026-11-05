@@ -29,9 +29,8 @@ img.fill { object-fit: cover; }
 .c-mint { background: var(--mint); color: var(--ink); }
 .c-pink { background: var(--pink); color: var(--ink); }
 .c-cobalt { background: var(--cobalt); color: var(--white); }
-.swatches { display: grid; grid-template-columns: repeat(2, 28px); grid-auto-rows: 28px; }
-.swatches i { display: block; }
-.swatches.big { grid-template-columns: repeat(2, 5cqh); grid-auto-rows: 5cqh; margin-bottom: 6cqh; }
+.logo { display: block; width: 112px; height: auto; }
+.logo.big { width: 26cqh; margin-bottom: 5cqh; }
 
 /* ---------- visitor app (phone) ---------- */
 .app { min-height: 100dvh; background: var(--paper); color: var(--ink); }

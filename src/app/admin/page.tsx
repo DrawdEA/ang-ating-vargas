@@ -97,6 +97,16 @@ export default function Admin() {
     call("DELETE", { allTests: true });
   };
 
+  const clearAll = () => {
+    if (confirming !== "all") {
+      setConfirming("all");
+      setTimeout(() => setConfirming((c) => (c === "all" ? null : c)), 4000);
+      return;
+    }
+    setConfirming(null);
+    call("DELETE", { all: true });
+  };
+
   const copyLink = async () => {
     const link = `${window.location.origin}/admin#key=${encodeURIComponent(key)}`;
     try {
@@ -155,7 +165,7 @@ export default function Admin() {
           <b>Copy admin link</b> to give a groupmate access. Anyone with the link can hide and delete.
         </li>
         <li>
-          <b>Add test page</b> sends a fake page to the screens. Clear them all before the real demo.
+          <b>Add test page</b> sends a fake page to the screens. <b>Delete all pages</b> clears everything, including pages visitors made. Both take two taps.
         </li>
       </ul>
       <div className="admin-tests">
@@ -165,6 +175,11 @@ export default function Admin() {
         <button className="ghost" disabled={adding} onClick={() => addTests(5)}>
           Add 5
         </button>
+        {items.length > 0 && (
+          <button className={`ghost danger${confirming === "all" ? " armed" : ""}`} onClick={clearAll}>
+            {confirming === "all" ? "Tap to delete everything" : "Delete all pages"}
+          </button>
+        )}
         {tests > 0 && (
           <button className={`ghost danger${confirming === "tests" ? " armed" : ""}`} onClick={clearTests}>
             {confirming === "tests" ? "Tap to confirm" : `Delete ${tests} test page${tests === 1 ? "" : "s"}`}

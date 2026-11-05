@@ -24,13 +24,17 @@ export async function POST(req: Request) {
   return Response.json({ ok: true });
 }
 
-// Delete one page, or every test page, along with their photos.
+// Delete one page, every test page, or every page, along with their photos.
 export async function DELETE(req: Request) {
   if (!(await isAdmin(req))) return Response.json({ error: "Wrong admin key." }, { status: 401 });
-  const { id, allTests } = (await req.json()) as { id?: string; allTests?: boolean };
-  const where = allTests ? "is_test = 1" : "id = ?";
-  const bind = allTests ? [] : [id];
+  const { id, allTests, all } = (await req.json()) as { id?: string; allTests?: boolean; all?: boolean };
+  const where = all ? "1 = 1" : allTests ? "is_test = 1" : "id = ?";
+  const bind = all || allTests ? [] : [id];
   const DB = await db();
+  if (all) {
+    await DB.batch([DB.prepare("DELETE FROM photos"), DB.prepare("DELETE FROM collections")]);
+    return Response.json({ ok: true });
+  }
   await DB.batch([
     DB.prepare(`DELETE FROM photos WHERE id IN (SELECT json_extract(value, '$.photoId') FROM collections, json_each(collections.picks) WHERE ${where})`).bind(...bind),
     DB.prepare(`DELETE FROM collections WHERE ${where}`).bind(...bind),

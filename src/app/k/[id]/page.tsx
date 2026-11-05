@@ -6,6 +6,7 @@ import { ShareButton } from "@/components/share-button";
 import { Shot } from "@/components/shot";
 import { getCollection } from "@/lib/db";
 import { STOPS } from "@/lib/stops";
+import { Logo } from "@/components/logo";
 
 export const dynamic = "force-dynamic";
 
@@ -23,12 +24,7 @@ export default async function KeepPage({ params }: Props) {
   return (
     <main className="doc">
       <div className="doc-inner">
-        <div className="swatches" aria-hidden="true">
-          <i className="c-mustard" />
-          <i className="c-mint" />
-          <i className="c-pink" />
-          <i className="c-cobalt" />
-        </div>
+        <Logo />
         <div style={{ fontSize: "clamp(9px, 2.2vw, 17px)" }}>
           <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />
         </div>

@@ -7,6 +7,7 @@ import { compressPhoto } from "@/lib/image";
 import { stopColor } from "@/lib/palette";
 import { STOPS } from "@/lib/stops";
 import type { Pick } from "@/lib/types";
+import { Logo } from "./logo";
 
 // A photo taken at one stop, kept on the phone until the visitor sends their page.
 type Taken = { blob: Blob; url: string; note: string; r: number };
@@ -128,12 +129,7 @@ function Welcome(props: { name: string; setName: (v: string) => void; onWall: bo
   const [err, setErr] = useState("");
   return (
     <div className="grow">
-      <div className="swatches" aria-hidden="true">
-        <i className="c-mustard" />
-        <i className="c-mint" />
-        <i className="c-pink" />
-        <i className="c-cobalt" />
-      </div>
+      <Logo />
       <h1>
         Vargas collected for sixty years. <span className="accent">You have one visit.</span>
       </h1>
