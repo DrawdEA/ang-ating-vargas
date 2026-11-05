@@ -32,6 +32,26 @@ export function WallScreen() {
   return (
     <main className="screen" aria-label="Ang Ating Vargas wall">
       {items.length > 0 && <div className="front-ellipse" aria-hidden="true" />}
+      {/* A dotted thread from each page to the one that arrived before it. */}
+      <svg className="threads" viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true">
+        {items.slice(1).map((c, j) => {
+          const A = SLOTS[j];
+          const B = SLOTS[j + 1];
+          return (
+            <path
+              key={c.id}
+              d={`M${A.x * 1.6} ${A.y * 0.9} Q${(A.x + B.x) * 0.8} ${Math.max(A.y, B.y) * 0.9 + 8} ${B.x * 1.6} ${B.y * 0.9}`}
+              fill="none"
+              stroke="var(--magenta)"
+              strokeWidth={j === 0 ? 3 : 2}
+              strokeDasharray="0 9"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+              opacity={Math.max(0.35, 1 - j * 0.12)}
+            />
+          );
+        })}
+      </svg>
       {items.map((c, i) => (
         <WallPage key={c.id} c={c} slot={i} fresh={i === 0 && now - c.createdAt < FRESH_MS} />
       ))}
