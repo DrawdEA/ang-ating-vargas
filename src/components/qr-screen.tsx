@@ -25,7 +25,7 @@ export function QrScreen() {
   }, [feed]);
 
   return (
-    <main className="screen c-mint" aria-label="Scan to keep your page">
+    <main className="screen" aria-label="Scan to keep your page">
       <div className="qrwall">
         <div className="hd">Scan to keep your Vargas.</div>
         <div className="tiles">

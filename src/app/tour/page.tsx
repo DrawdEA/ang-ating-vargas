@@ -29,13 +29,11 @@ export default function Tour() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const field = slide.kind === "stop" ? stopColor(slide.index) : slide.kind === "qr" ? "mint" : "cobalt";
-
   return (
-    <main className={`tour c-${field}`} onClick={() => setN((s) => Math.min(LAST, s + 1))}>
+    <main className="tour" onClick={() => setN((s) => Math.min(LAST, s + 1))}>
       {slide.kind === "start" && (
         <>
-          <div className="half c-cobalt">
+          <div className="half">
             <div className="caps" style={{ fontSize: "2.2cqh", marginBottom: "6cqh" }}>
               Vargas Museum · 3rd floor
             </div>
@@ -51,7 +49,7 @@ export default function Tour() {
       )}
       {slide.kind === "stop" && (
         <div className="stop-slide">
-          <div className="big-num">{slide.index + 1}</div>
+          <div className={`big-num c-${stopColor(slide.index)}`}>{slide.index + 1}</div>
           <div className="caps" style={{ fontSize: "2.2cqh" }}>
             {STOPS[slide.index].zone}
           </div>

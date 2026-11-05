@@ -30,7 +30,7 @@ export function WallScreen() {
   const items = feed?.items ?? [];
 
   return (
-    <main className="screen c-cobalt" aria-label="Ang Ating Vargas wall">
+    <main className="screen" aria-label="Ang Ating Vargas wall">
       {items.length > 0 && <div className="front-ellipse" aria-hidden="true" />}
       {items.map((c, i) => (
         <WallPage key={c.id} c={c} slot={i} fresh={i === 0 && now - c.createdAt < FRESH_MS} />
@@ -48,8 +48,9 @@ export function WallScreen() {
 function WallPage({ c, slot, fresh }: { c: Collection; slot: number; fresh: boolean }) {
   const [placed, setPlaced] = useState(false);
   useEffect(() => {
-    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setPlaced(true)));
-    return () => cancelAnimationFrame(raf);
+    // A short timer, not requestAnimationFrame, so pages still settle if the tab is in the background.
+    const t = setTimeout(() => setPlaced(true), 60);
+    return () => clearTimeout(t);
   }, []);
   const s = SLOTS[slot];
   const style = placed

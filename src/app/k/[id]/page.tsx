@@ -5,7 +5,6 @@ import { ScrapbookPage } from "@/components/scrapbook-page";
 import { ShareButton } from "@/components/share-button";
 import { Shot } from "@/components/shot";
 import { getCollection } from "@/lib/db";
-import { colorFor } from "@/lib/palette";
 import { STOPS } from "@/lib/stops";
 
 export const dynamic = "force-dynamic";
@@ -21,10 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function KeepPage({ params }: Props) {
   const c = await getCollection((await params).id);
   if (!c) notFound();
-  // The page sits on its own color field; the card inside uses the next color so it stands out.
-  const field = colorFor(c.id) === "mint" ? "mustard" : "mint";
   return (
-    <main className={`doc c-${field}`}>
+    <main className="doc">
       <div className="doc-inner">
         <div className="caps">UP Vargas Museum · Ang Ating Vargas</div>
         <div style={{ fontSize: "clamp(9px, 2.2vw, 17px)" }}>

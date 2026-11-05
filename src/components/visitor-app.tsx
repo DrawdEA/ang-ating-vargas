@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ScrapbookPage } from "./scrapbook-page";
 import { Shot } from "./shot";
 import { compressPhoto } from "@/lib/image";
-import { colorFor, stopColor } from "@/lib/palette";
+import { stopColor } from "@/lib/palette";
 import { STOPS } from "@/lib/stops";
 import type { Pick } from "@/lib/types";
 
@@ -68,11 +68,8 @@ export function VisitorApp() {
   };
 
   const inFlow = step.kind === "stop" || step.kind === "review";
-  // Each screen is one of the museum's color fields: cobalt to start, a new color per stop.
-  const field = step.kind === "welcome" ? "cobalt" : step.kind === "stop" ? stopColor(step.index) : step.kind === "review" ? (colorFor(name) === "mint" ? "mustard" : "mint") : "pink";
-
   return (
-    <main className={`app c-${field}`}>
+    <main className="app">
       <div className="app-inner">
         {inFlow && <FilmStrip taken={taken} current={step.kind === "stop" ? step.index : -1} onJump={(index) => setStep({ kind: "stop", index })} />}
 
@@ -117,7 +114,8 @@ function FilmStrip({ taken, current, onJump }: { taken: (Taken | null)[]; curren
     <div className="strip" aria-label={`${count} of ${taken.length} photos collected`}>
       {taken.map((t, i) => (
         <button key={i} className={`slot${i === current ? " current" : ""}${t ? " filled" : ""}`} onClick={() => onJump(i)} aria-label={`Stop ${i + 1}${t ? ", photo taken" : ""}`}>
-          {t ? <Shot src={t.url} /> : <span>{i + 1}</span>}
+          {t && <Shot src={t.url} />}
+          <span className="slot-num">{i + 1}</span>
         </button>
       ))}
       <span className="strip-count">
@@ -131,6 +129,12 @@ function Welcome(props: { name: string; setName: (v: string) => void; onWall: bo
   const [err, setErr] = useState("");
   return (
     <div className="grow">
+      <div className="swatches" aria-hidden="true">
+        <i className="c-mustard" />
+        <i className="c-mint" />
+        <i className="c-pink" />
+        <i className="c-cobalt" />
+      </div>
       <div className="wordmark caps">
         <span>Vargas Museum</span>
         <span>3F</span>
@@ -214,7 +218,8 @@ function StopScreen(props: { index: number; taken: Taken | null; onTake: (t: Tak
     <>
       <div>
         <div className="stop-num">
-          Stop {props.index + 1} · {stop.zone}
+          <span className={`stop-chip c-${stopColor(props.index)}`}>{props.index + 1}</span>
+          {stop.zone}
         </div>
         <h2 style={{ marginTop: 10 }}>{stop.prompt}</h2>
       </div>
@@ -227,7 +232,7 @@ function StopScreen(props: { index: number; taken: Taken | null; onTake: (t: Tak
           <div className="vf-caption">Stop {props.index + 1}. Your photo.</div>
         </>
       ) : (
-        <label className="viewfinder empty-vf">
+        <label className={`viewfinder empty-vf c-${stopColor(props.index)}`}>
           <span className="ellipse" aria-hidden="true" />
           <span className="shutter" aria-hidden="true" />
           <span>{working ? "Processing..." : "Take photo"}</span>
