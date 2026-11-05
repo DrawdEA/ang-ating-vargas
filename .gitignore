@@ -45,3 +45,6 @@ next-env.d.ts
 .wrangler
 .dev.vars*
 !.dev.vars.example
+
+# licensed font files, not redistributed in the public repo
+src/app/fonts/*.ttf

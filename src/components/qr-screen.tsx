@@ -25,18 +25,16 @@ export function QrScreen() {
   }, [feed]);
 
   return (
-    <main className="screen" aria-label="Scan to keep your page">
+    <main className="screen c-mint" aria-label="Scan to keep your page">
       <div className="qrwall">
-        <div className="hd">
-          <b>Scan to keep your Vargas</b>
-        </div>
+        <div className="hd">Scan to keep your Vargas.</div>
         <div className="tiles">
           {items.map((c) => (
             <Tile key={c.id} c={c} now={now} entering={entering.has(c.id)} />
           ))}
         </div>
       </div>
-      {feed && !items.length && <div className="empty">No pages yet</div>}
+      {feed && !items.length && <div className="empty">No pages yet.</div>}
     </main>
   );
 }
@@ -55,7 +53,7 @@ function Tile({ c, now, entering }: { c: Collection; now: number; entering: bool
   return (
     <div className={`tile${entering ? " enter" : ""}${fresh ? " fresh" : ""}`}>
       <div className="pg">
-        <ScrapbookPage name={c.name} picks={c.picks} createdAt={c.createdAt} />
+        <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />
       </div>
       <div className="meta">
         <div className="qr">{qr && <img src={qr} alt={`QR code for ${c.name}'s page`} />}</div>

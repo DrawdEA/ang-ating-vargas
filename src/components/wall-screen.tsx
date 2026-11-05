@@ -30,15 +30,16 @@ export function WallScreen() {
   const items = feed?.items ?? [];
 
   return (
-    <main className="screen" aria-label="Ang Ating Vargas wall">
+    <main className="screen c-cobalt" aria-label="Ang Ating Vargas wall">
+      {items.length > 0 && <div className="front-ellipse" aria-hidden="true" />}
       {items.map((c, i) => (
         <WallPage key={c.id} c={c} slot={i} fresh={i === 0 && now - c.createdAt < FRESH_MS} />
       ))}
 
-      {feed && !items.length && <div className="empty">Waiting for the first collection</div>}
+      {feed && !items.length && <div className="empty">Waiting for the first page.</div>}
 
       <div className="hud title">Ang Ating Vargas</div>
-      {feed && <div className="hud count">{feed.total}</div>}
+      {feed && <div className="hud count">{feed.total} pages</div>}
     </main>
   );
 }
@@ -56,14 +57,15 @@ function WallPage({ c, slot, fresh }: { c: Collection; slot: number; fresh: bool
         left: `${s.x}%`,
         top: `${s.y}%`,
         zIndex: 40 - slot,
-        opacity: slot ? Math.max(0.45, 1 - slot * 0.07) : 1,
-        transform: `translate(-50%,-50%) scale(${s.s}) rotate(${slot ? (slot % 2 ? -3 : 3) : 0}deg)`,
-        filter: slot ? `sepia(${Math.min(0.85, slot * 0.12)}) brightness(${1 - slot * 0.06})` : "none",
+        // Older pages fade into the cobalt field and lose their color, like the museum's duotone photos.
+        opacity: slot ? Math.max(0.4, 1 - slot * 0.08) : 1,
+        transform: `translate(-50%,-50%) scale(${s.s})`,
+        filter: slot ? `grayscale(${Math.min(1, slot * 0.2)})` : "none",
       }
     : { left: "50%", top: "120%", zIndex: 40 - slot, transform: "translate(-50%,-50%) scale(1.8)" };
   return (
     <div className={`wp${fresh ? " fresh" : ""}`} style={style}>
-      <ScrapbookPage name={c.name} picks={c.picks} createdAt={c.createdAt} />
+      <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />
     </div>
   );
 }

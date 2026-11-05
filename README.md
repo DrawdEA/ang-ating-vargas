@@ -1,6 +1,6 @@
 # Ang Ating Vargas
 
-A participatory experience for the 3rd floor of the UP Vargas Museum. Visitors photograph what four prompts ask for, add a line on why, and send the result as a scrapbook page: their own Vargas. Pages appear live on a projector wall, and a monitor beside it shows each page with a QR code to keep it.
+A participatory experience for the 3rd floor of the UP Vargas Museum. Visitors photograph what four prompts ask for, add a line on why, and send the photos to the wall as one page, their own Vargas. A projector shows the newest pages, and a monitor beside it shows each page with a QR code that opens it on the visitor's phone.
 
 ## How to use the prototype
 
@@ -22,7 +22,7 @@ A participatory experience for the 3rd floor of the UP Vargas Museum. Visitors p
 
 ## Stack
 
-Next.js 15 (App Router, TypeScript) deployed to Cloudflare Workers through OpenNext, with Cloudflare D1 storing pages and the compressed photos. Screens check for new pages every 3 seconds. QR codes come from the `qrcode` package; photos are resized on the phone before upload.
+Next.js 15 (App Router, TypeScript) runs on Cloudflare Workers through OpenNext. Cloudflare D1 stores the pages and photos. The phone resizes each photo before upload, the screens check for new pages every 3 seconds, and the `qrcode` package draws the QR codes. Type is Rotis Sans Serif, loaded from `src/app/fonts/`.
 
 ## Editing the stops
 

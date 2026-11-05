@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ScrapbookPage } from "./scrapbook-page";
 import { Shot } from "./shot";
 import { compressPhoto } from "@/lib/image";
+import { colorFor, stopColor } from "@/lib/palette";
 import { STOPS } from "@/lib/stops";
 import type { Pick } from "@/lib/types";
 
@@ -67,9 +68,11 @@ export function VisitorApp() {
   };
 
   const inFlow = step.kind === "stop" || step.kind === "review";
+  // Each screen is one of the museum's color fields: cobalt to start, a new color per stop.
+  const field = step.kind === "welcome" ? "cobalt" : step.kind === "stop" ? stopColor(step.index) : step.kind === "review" ? (colorFor(name) === "mint" ? "mustard" : "mint") : "pink";
 
   return (
-    <main className="app">
+    <main className={`app c-${field}`}>
       <div className="app-inner">
         {inFlow && <FilmStrip taken={taken} current={step.kind === "stop" ? step.index : -1} onJump={(index) => setStep({ kind: "stop", index })} />}
 
@@ -92,7 +95,8 @@ export function VisitorApp() {
 
         {step.kind === "sent" && (
           <div className="grow">
-            <h1>{onWall ? "Look up. You’re on the wall." : "Saved."}</h1>
+            <div className="caps">Sent</div>
+            <h1>{onWall ? "Look up. You're on the wall." : "Your page is saved."}</h1>
             <a className="btn" href={`/k/${step.id}`}>
               Open my page
             </a>
@@ -106,7 +110,7 @@ export function VisitorApp() {
   );
 }
 
-// Four polaroid slots that fill in as the visitor collects. Tap any slot to go to that stop.
+// Four slots that fill with the visitor's photos. Tap any slot to go to that stop.
 function FilmStrip({ taken, current, onJump }: { taken: (Taken | null)[]; current: number; onJump: (i: number) => void }) {
   const count = taken.filter(Boolean).length;
   return (
@@ -127,7 +131,13 @@ function Welcome(props: { name: string; setName: (v: string) => void; onWall: bo
   const [err, setErr] = useState("");
   return (
     <div className="grow">
-      <h1>Vargas collected for sixty years. You have one visit.</h1>
+      <div className="wordmark caps">
+        <span>Vargas Museum</span>
+        <span>3F</span>
+      </div>
+      <h1>
+        Vargas collected for sixty years. <span className="accent">You have one visit.</span>
+      </h1>
       <div className="field">
         <input
           id="name"
@@ -203,18 +213,24 @@ function StopScreen(props: { index: number; taken: Taken | null; onTake: (t: Tak
   return (
     <>
       <div>
-        <div className="eyebrow">{stop.zone}</div>
-        <h2 style={{ marginTop: 6 }}>{stop.prompt}</h2>
+        <div className="stop-num">
+          Stop {props.index + 1} · {stop.zone}
+        </div>
+        <h2 style={{ marginTop: 10 }}>{stop.prompt}</h2>
       </div>
 
       {t ? (
-        <div className="viewfinder">
-          <Shot src={t.url} alt={`Your photo for stop ${props.index + 1}`} />
-        </div>
+        <>
+          <div className="viewfinder">
+            <Shot src={t.url} alt={`Your photo for stop ${props.index + 1}`} />
+          </div>
+          <div className="vf-caption">Stop {props.index + 1}. Your photo.</div>
+        </>
       ) : (
         <label className="viewfinder empty-vf">
+          <span className="ellipse" aria-hidden="true" />
           <span className="shutter" aria-hidden="true" />
-          <span>{working ? "Processing…" : "Take photo"}</span>
+          <span>{working ? "Processing..." : "Take photo"}</span>
           <CameraInput disabled={working} onFile={onFile} />
         </label>
       )}
@@ -275,6 +291,7 @@ function Review(props: { name: string; taken: (Taken | null)[]; onSend: () => vo
 
   return (
     <div className="grow">
+      <div className="caps">Your Vargas</div>
       <div style={{ fontSize: 9.5 }}>
         <ScrapbookPage name={props.name} picks={picks} createdAt={now} srcs={entries.map(({ t }) => t.url)} />
       </div>
@@ -284,7 +301,7 @@ function Review(props: { name: string; taken: (Taken | null)[]; onSend: () => vo
         </div>
       )}
       <button className="btn" onClick={props.onSend} disabled={props.busy}>
-        {props.busy ? "Sending…" : "Send to the wall"}
+        {props.busy ? "Sending..." : "Send to the wall"}
       </button>
     </div>
   );

@@ -110,7 +110,8 @@ export default function Admin() {
 
   if (!items) {
     return (
-      <main className="doc">
+      <main className="doc admin">
+        <div className="doc-inner">
         <h1>Admin</h1>
         <form
           className="admin-login"
@@ -126,6 +127,7 @@ export default function Admin() {
           </button>
         </form>
         {error && <p className="admin-err">{error}</p>}
+        </div>
       </main>
     );
   }
@@ -134,7 +136,8 @@ export default function Admin() {
   const tests = items.filter((i) => i.isTest).length;
 
   return (
-    <main className="doc">
+    <main className="doc admin">
+        <div className="doc-inner">
       <div className="admin-head">
         <h1>Admin</h1>
         <button className="ghost" onClick={copyLink}>
@@ -176,7 +179,7 @@ export default function Admin() {
         {items.map((item) => (
           <div key={item.id} className={`admin-row${item.hidden ? " hidden" : ""}`}>
             <a className="pg" href={`/k/${item.id}`} target="_blank" rel="noreferrer">
-              <ScrapbookPage name={item.name} picks={item.picks} createdAt={item.createdAt} />
+              <ScrapbookPage id={item.id} name={item.name} picks={item.picks} createdAt={item.createdAt} />
             </a>
             <div>
               <div style={{ color: "var(--fg)" }}>
@@ -197,6 +200,7 @@ export default function Admin() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </main>
   );

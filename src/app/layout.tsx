@@ -1,23 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Caveat, Hanken_Grotesk, IBM_Plex_Mono, Young_Serif } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const display = Young_Serif({ weight: "400", subsets: ["latin"], variable: "--f-display" });
-const body = Hanken_Grotesk({ subsets: ["latin"], variable: "--f-body" });
-const hand = Caveat({ weight: "500", subsets: ["latin"], variable: "--f-hand" });
-const mono = IBM_Plex_Mono({ weight: ["400", "500"], subsets: ["latin"], variable: "--f-mono" });
+const rotis = localFont({
+  src: [
+    { path: "./fonts/rotis-sans-55.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/rotis-sans-65.ttf", weight: "700", style: "normal" },
+  ],
+  variable: "--f-rotis",
+});
 
 export const metadata: Metadata = {
   title: "Ang Ating Vargas",
-  description: "Collect your own Vargas at the UP Vargas Museum: photograph what each prompt asks for and see your page on the wall.",
+  description: "Photograph four prompts at the UP Vargas Museum and see your page on the wall.",
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#15130F" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#1D3DB4" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${display.variable} ${body.variable} ${hand.variable} ${mono.variable}`}>{children}</body>
+    <html lang="en" className={rotis.variable}>
+      <body>{children}</body>
     </html>
   );
 }
