@@ -91,26 +91,18 @@ export function WallScreen() {
   );
 }
 
-// Enters from below the screen, then CSS transitions carry it to its slot as newer pages arrive.
+// Appears straight in its slot. CSS transitions only move it later, when newer pages push it back.
 function WallPage({ c, slot, fresh }: { c: Collection; slot: number; fresh: boolean }) {
-  const [placed, setPlaced] = useState(false);
-  useEffect(() => {
-    // A short timer, not requestAnimationFrame, so pages still settle if the tab is in the background.
-    const t = setTimeout(() => setPlaced(true), 60);
-    return () => clearTimeout(t);
-  }, []);
   const s = SLOTS[slot];
-  const style = placed
-    ? {
-        left: `${s.x}%`,
-        top: `${s.y}%`,
-        zIndex: 40 - slot,
-        // Older pages fade into the background and lose their color.
-        opacity: slot ? Math.max(0.4, 1 - slot * 0.08) : 1,
-        transform: `translate(-50%,-50%) scale(${s.s})`,
-        filter: slot ? `grayscale(${Math.min(1, slot * 0.2)})` : "none",
-      }
-    : { left: "50%", top: "120%", zIndex: 40 - slot, transform: "translate(-50%,-50%) scale(1.8)" };
+  const style = {
+    left: `${s.x}%`,
+    top: `${s.y}%`,
+    zIndex: 40 - slot,
+    // Older pages fade into the background and lose their color.
+    opacity: slot ? Math.max(0.4, 1 - slot * 0.08) : 1,
+    transform: `translate(-50%,-50%) scale(${s.s})`,
+    filter: slot ? `grayscale(${Math.min(1, slot * 0.2)})` : "none",
+  };
   return (
     <div className={`wp${fresh ? " fresh" : ""}`} style={style} data-page={c.id}>
       <ScrapbookPage id={c.id} name={c.name} picks={c.picks} createdAt={c.createdAt} />
